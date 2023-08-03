@@ -2,58 +2,73 @@ import pygame as p
 import setting as s
 import loadimg as l
 import chessEngine
-
+import button as b
 chessManImg = l.loadChessMan()
 boardImg = l.loadBoard()
 lightImg = l.loadLight()
+
 def main():
     p.init()   
     screen = p.display.set_mode((s.SCREEN_WIDTH,s.SCREEN_HEIGHT))
     clock = p.time.Clock()
     gs = chessEngine.State()
-    for i in range(10):
-        for j in range(9):
-            if gs.chessMan[i][j] != None:
-                print(gs.chessMan[i][j].type) 
     run = True
     listClick=[]
     cell =()
+    objects=[]
+    backwardBut = b.Button(s.BACKWARD_X, s.BACKWARD_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'re', l.loadButton('backward'), gs.reMove)
+    nextstepBut = b.Button(s.NEXTSTEP_X, s.NEXTSTEP_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ne', l.loadButton('nextstep'), gs.nextMove)
+    objects.append(backwardBut)
+    objects.append(nextstepBut)
     while run:
+        drawGameState(screen,gs)
         for e in p.event.get():
             if e.type == p.QUIT:
                 run = False
             elif e.type == p.MOUSEBUTTONDOWN:
                 start = s.GRID
                 pos = p.mouse.get_pos()
-                row = (pos[1]-start[0])//start[2]
-                col = (pos[0]-start[1])//start[2]
-                print(row,'---',col)
-                
+                row = int((pos[1]-start[0])//start[2])
+                col = int((pos[0]-start[1])//start[2])
+                if row >9 or col >8 or row <0 or col <0:
+                    # if row ==4 and col ==11:
+                    #     drawClick(screen,'backward')
+                    # elif row == 4 and col ==12:
+                    #     drawClick(screen,'nextstep')
+                    break
+                if listClick ==[]:
+                    if (gs.redMove and gs.board[row][col][0] == 'b') or (not gs.redMove and gs.board[row][col][0] == 'r'): break
                 
                 listClick.append((row,col))
-                if gs.board[listClick[0][0]][listClick[0][1]]=='---':
-                    listClick =[]
-                else:
-                    gs.selectedCell = listClick[0]
-                    
-                if len(listClick) ==2:
-                    if listClick[0] == listClick[1]:
+                
+                
+                if 0<= row <=9 and 0<= col <=8:
+                    if gs.board[listClick[0][0]][listClick[0][1]]=='---':
                         listClick =[]
-                        
                     else:
-                        move = chessEngine.Move(gs,listClick[0], listClick[1])
-                        gs.makeMove(move)
-                        listClick=[]
-                    gs.selectedCell = ()
+                        gs.selectedCell = listClick[0]
                         
-        drawGameState(screen,gs)
+                    if len(listClick) ==2:
+                        if listClick[0] == listClick[1]:
+                            listClick =[]
+                            
+                        else:
+                            
+                            listValid = gs.checkValid(gs.selectedCell)
+                            if listClick[1] in listValid:
+                                
+                                move = chessEngine.Move(gs,listClick[0], listClick[1])
+                                gs.makeMove(move)
+                            listClick =[]
+                        gs.selectedCell = ()
+        for o in objects:
+            o.process(screen,gs)
         clock.tick(s.MAX_FPS)
         p.display.flip()
         
 def drawValid(screen,gs):
-    listValid = gs.chessMan[gs.selectedCell[0]][gs.selectedCell[1]].type.canMove(gs.board, gs.selectedCell)
+    listValid = gs.checkValid(gs.selectedCell)
     start = s.GRID
-    print(listValid)
     for i in listValid:
         screen.blit(lightImg, p.Rect(start[1]+ i[1]*start[2],start[0]+i[0]*start[2], s.CELL_SIZE, s.CELL_SIZE))
 def drawGameState(screen,gs):
@@ -68,8 +83,46 @@ def drawChessMan(screen,board):
             chessMan = board[i][j]
             if chessMan != '---':  
                 screen.blit(chessManImg[chessMan],p.Rect(start[1]+j*start[2],start[0]+i*start[2],s.CELL_SIZE,s.CELL_SIZE))
+# def drawButton(screen, gs):
+#     if gs.moveLog == []:
+#         backward = l.loadButton('backward')
+#         nextstep = l.loadButton('nextstep')
+#     else:
+#         backward = l.loadButton('backwardActive')
+#         nextstep = l.loadButton('nextstepActive')
+#     screen.blit(backward,(s.WIDTH, s.HEIGHT/2 - s.BUT_HEIGHT/2 ))
+#     screen.blit(nextstep,(s.SCREEN_WIDTH -s.BUT_WIDTH,  s.HEIGHT/2 - s.BUT_HEIGHT/2))
+# def drawClick(screen, type ,held):
+#     global paused
+#     mouse = p.mouse.get_pos()
+#     click = p.mouse.get_pressed()
+#     if type == 'backward':
+#         backward = l.loadButton('backwardClick')
+#         screen.blit(backward,(s.WIDTH, s.HEIGHT/2 - s.BUT_HEIGHT/2 ))
+#         p.display.update()
+#         if click[0] ==1:
+#             if held ==False:
                 
-             
+        # delayTime = 100
+        #thisEvent = p.USEREVENT + 1
+        # p.time.set_timer(thisEvent, delayTime)
+    #     run =True
+    #     while run:
+    #         for e in p.event.get():
+    #             if e.type == p.QUIT:
+    #                 run = False
+    #             else:
+    #                 screen.blit(backward,(s.WIDTH, s.HEIGHT/2 - s.BUT_HEIGHT/2 ))
+    #                 p.display.update()
+    #                 p.time.delay(100)
+    #                 break
+    #             run = False
+    #     p.quit()
+    #     quit()
+    # elif type == 'nextstep':
+    #     nextstep = l.loadButton('nextstepClick')
+    #     screen.blit(nextstep,(s.SCREEN_WIDTH -s.BUT_WIDTH,  s.HEIGHT/2 - s.BUT_HEIGHT/2))
+
 if __name__ == '__main__':
     main()
     
