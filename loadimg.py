@@ -26,3 +26,6 @@ def loadButton(type):
         button3 = p.transform.scale(p.image.load('img/nextstepHover.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
     
     return [button0, button1, button2, button3]
+def loadSquare ():
+    square = p.transform.scale(p.image.load('img/squareOrigin.png'),(s.CELL_SIZE, s.CELL_SIZE))
+    return square

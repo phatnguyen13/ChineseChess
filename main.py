@@ -6,12 +6,14 @@ import button as b
 chessManImg = l.loadChessMan()
 boardImg = l.loadBoard()
 lightImg = l.loadLight()
-
+squareImg = l.loadSquare()
 def main():
     p.init()   
     screen = p.display.set_mode((s.SCREEN_WIDTH,s.SCREEN_HEIGHT))
     clock = p.time.Clock()
     gs = chessEngine.State()
+    for so in gs.listSoldier:
+        print(so)
     run = True
     listClick=[]
     cell =()
@@ -40,8 +42,6 @@ def main():
                     if (gs.redMove and gs.board[row][col][0] == 'b') or (not gs.redMove and gs.board[row][col][0] == 'r'): break
                 
                 listClick.append((row,col))
-                
-                
                 if 0<= row <=9 and 0<= col <=8:
                     if gs.board[listClick[0][0]][listClick[0][1]]=='---':
                         listClick =[]
@@ -51,9 +51,7 @@ def main():
                     if len(listClick) ==2:
                         if listClick[0] == listClick[1]:
                             listClick =[]
-                            
                         else:
-                            
                             listValid = gs.checkValid(gs.selectedCell)
                             if listClick[1] in listValid:
                                 
@@ -63,6 +61,8 @@ def main():
                         gs.selectedCell = ()
         for o in objects:
             o.process(screen,gs)
+        drawFoot(screen,gs)
+        drawChessMate(screen,gs)
         clock.tick(s.MAX_FPS)
         p.display.flip()
         
@@ -76,6 +76,7 @@ def drawGameState(screen,gs):
     drawChessMan(screen,gs.board)
     if gs.selectedCell != ():
         drawValid(screen,gs)
+        screen.blit(squareImg, p.Rect(s.GRID[1]+ gs.selectedCell[1]*s.GRID[2],s.GRID[0]+gs.selectedCell[0]*s.GRID[2], s.CELL_SIZE, s.CELL_SIZE))
 def drawChessMan(screen,board):
     start = s.GRID
     for i in range(s.DIMENSION+1):
@@ -83,6 +84,21 @@ def drawChessMan(screen,board):
             chessMan = board[i][j]
             if chessMan != '---':  
                 screen.blit(chessManImg[chessMan],p.Rect(start[1]+j*start[2],start[0]+i*start[2],s.CELL_SIZE,s.CELL_SIZE))
+def drawFoot(screen, gs: chessEngine.State):
+    if gs.moveLog == []:
+        return
+    startRow = gs.moveLog[-1].startRow
+    startCol = gs.moveLog[-1].startCol
+    endRow = gs.moveLog[-1].endRow
+    endCol = gs.moveLog[-1].endCol
+    screen.blit(squareImg, p.Rect(s.GRID[1]+ startCol*s.GRID[2],s.GRID[0]+startRow*s.GRID[2], s.CELL_SIZE, s.CELL_SIZE))
+    screen.blit(squareImg, p.Rect(s.GRID[1]+ endCol*s.GRID[2],s.GRID[0]+endRow*s.GRID[2], s.CELL_SIZE, s.CELL_SIZE))
+def drawChessMate(screen, gs: chessEngine.State):
+    if gs.checkMate():
+        p.font.init()
+        myFont = p.font.SysFont('Comic Sans MS', 30)
+        textSurface = myFont.render('Checkmate', False, (0, 0, 0))
+        screen.blit(textSurface,(s.WIDTH/2 - textSurface.get_width()/2, s.SCREEN_HEIGHT/2 - textSurface.get_height()/2))
 # def drawButton(screen, gs):
 #     if gs.moveLog == []:
 #         backward = l.loadButton('backward')
