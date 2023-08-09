@@ -12,8 +12,7 @@ def main():
     screen = p.display.set_mode((s.SCREEN_WIDTH,s.SCREEN_HEIGHT))
     clock = p.time.Clock()
     gs = chessEngine.State()
-    for so in gs.listSoldier:
-        print(so)
+
     run = True
     listClick=[]
     cell =()
@@ -22,6 +21,7 @@ def main():
     nextstepBut = b.Button(s.NEXTSTEP_X, s.NEXTSTEP_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ne', l.loadButton('nextstep'), gs.nextMove)
     objects.append(backwardBut)
     objects.append(nextstepBut)
+    
     while run:
         drawGameState(screen,gs)
         for e in p.event.get():

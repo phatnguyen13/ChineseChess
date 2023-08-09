@@ -283,47 +283,107 @@ class ChessMan:
                     break
                 else:
                     break
-            if flag == False:
-                return True
+            if flag:
+                return False
+        if ChessMan.isThreaten(nextBoard):
+            print("Threaten check")
             return False
-        else:
-            # if ChessMan.isThreaten(nextBoard):
-            #     return False
-            return True
+        return True
     @staticmethod
     def isThreaten(board):
         nextBoard = deepcopy(board)
+        listSoldier = deepcopy(board.listSoldier)
         bk = nextBoard.blackKing
         rk = nextBoard.redKing
-        turn = nextBoard.redMove
+        turn = not nextBoard.redMove
         
         x = bk[0]
         y = bk[1]
-        team = 'r'
-        if turn:
+        team = 'b'
+        if not turn:
             x = rk[0]
             y = rk[1]
-            team = 'b'
+            team = 'r'
         
         # check if a horse is threatening the king
-        candidate = [(x+1,y+2),(x+1,y-2),(x-1,y+2),(x-1,y-2),(x+2,y+1),(x+2,y-1),(x-2,y+1),(x-2,y-1)]
-        for i in candidate:
-            if 0<=i[0]<10 and 0<=i[1]<9:
-                if nextBoard.board[i[0]][i[1]][0] != team and nextBoard.board[i[0]][i[1]][1:] == 'ma':
-                    ma = ChessMan(nextBoard.board[i[0]][i[1]])
-                    if i in ma.type.canMove(nextBoard.board,i):
+        print("turn of ",team)
+        ma =[]
+        for i in listSoldier:
+            if i.name == 'ma' and i.live and i.team != team:
+                ma += [i.position]
+        if ma != []:
+            candidate = [(x+1,y+2),(x+1,y-2),(x-1,y+2),(x-1,y-2),(x+2,y+1),(x+2,y-1),(x-2,y+1),(x-2,y-1)]
+            for i in ma:
+                if i in candidate:
+                    maChien = ChessMan(nextBoard.board[i[0]][i[1]])
+                    if (x,y) in maChien.type.canMove(nextBoard.board,i):
+                        print("The king is threatened by a horse")
                         return True
         # check if a car is threatening the king
-        for i in range(x+1,10):
-            if nextBoard.board[i][y] == '---':
-                continue
-            elif nextBoard.board[i][y][0] != team and nextBoard.board[i][y][1:] == 'xe':
-                xe = ChessMan(nextBoard.board[i][y])
-                if (i,y) in xe.type.canMove(nextBoard.board,(i,y)):
-                    return True
-            else:
-                break
-        for i in range(x-1,-1,-1):
-            pass
+        xe = []
+        for i in listSoldier:
+            if i.name == 'xe' and i.live and i.team != team:
+                xe += [i.position]
+        if xe != []:
+            for i in xe:
+                if i[0] == x:
+                    if i[1] < y:
+                        for j in range(i[1],y):
+                            if j == y-1:
+                                print("The king is threatened by a car")
+                                return True
+                            if nextBoard.board[x][j+1] != '---':
+                                break
+                    if i[1] > y:
+                        for j in range(y,i[1]):
+                            if j == i[1]-1:
+                                print("The king is threatened by a car")
+                                return True
+                            if nextBoard.board[x][j+1] != '---':
+                                break
+                if i[1] == y:
+                    if i[0] < x:
+                        for j in range(i[0],x):
+                            if j == x-1:
+                                print("The king is threatened by a car")
+                                return True
+                            if nextBoard.board[j+1][y] != '---':
+                                break
+                    if i[0] > x:
+                        for j in range(x,i[0]):
+                            if j == i[0]-1:
+                                print("The king is threatened by a car")
+                                return True
+                            if nextBoard.board[j+1][y] != '---':
+                                break
         
+        # check if a king is theatening by a canon
+        phao = []
+        for i in listSoldier:
+            if i.name == 'ph' and i.live and i.team != team:
+                phao += [i.position]
+        if phao != []:
+            stayaway = [(x,y),(x+1,y),(x-1,y),(x,y+1),(x,y-1)]
+            candidate = [(x,y) for x in range(10) if (x,y) not in stayaway ] + [(x,y) for y in range(9) if (x,y) not in stayaway ]
+
+            for i in phao:
+                if i in candidate:
+                    phaoLenNong = ChessMan(nextBoard.board[i[0]][i[1]])
+                    print("phao nong at")
+                    if (x,y) in phaoLenNong.type.canMove(nextBoard.board,i):
+                        print("The king is threatened by a canon")
+                        return True
+        # check if a king is threatened by a soldier
+        tot = []
+        for i in listSoldier:
+            if i.name == 'ch' and i.live and i.team != team:
+                tot += [i.position]
+        if tot != []:
+            candidate = [(x,y+1),(x,y-1)] + ([(x-1,y)] if team == 'r' else [(x+1,y)])
+            for i in tot:
+                if i in candidate:
+                    totChien = ChessMan(nextBoard.board[i[0]][i[1]])
+                    if (x,y) in totChien.type.canMove(nextBoard.board,i):
+                        print("The king is threatened by a soldier")
+                        return True
         return False
