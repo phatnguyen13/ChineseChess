@@ -24,7 +24,21 @@ def loadButton(type):
         button1 = p.transform.scale(p.image.load('img/nextstepActive.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
         button2 = p.transform.scale(p.image.load('img/nextstepClick.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
         button3 = p.transform.scale(p.image.load('img/nextstepHover.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
-    
+    elif type == 'reverse':
+        button0 = p.transform.scale(p.image.load('img/exchange.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button1 = p.transform.scale(p.image.load('img/exchangeActive.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button2 = p.transform.scale(p.image.load('img/exchangeClick.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button3 = p.transform.scale(p.image.load('img/exchangeHover.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+    elif type == 'start':
+        button0 = p.transform.scale(p.image.load('img/start.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button1 = p.transform.scale(p.image.load('img/startClick.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button2 = p.transform.scale(p.image.load('img/startHover.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button3 = None
+    elif type == 'replay':
+        button0 = p.transform.scale(p.image.load('img/replay.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button1 = p.transform.scale(p.image.load('img/replayClick.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button2 = p.transform.scale(p.image.load('img/replayHover.png'),(s.BUT_WIDTH, s.BUT_HEIGHT))
+        button3 = None
     return [button0, button1, button2, button3]
 def loadSquare ():
     square = p.transform.scale(p.image.load('img/squareOrigin.png'),(s.CELL_SIZE, s.CELL_SIZE))

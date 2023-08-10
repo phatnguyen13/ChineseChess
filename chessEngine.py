@@ -1,5 +1,7 @@
 import rule
 from copy import deepcopy
+import random
+import playWithMachine as pWM
 class Move:
     ranksToRows = {0:'10',1:'9', 2:'8', 3:'7', 4:'6', 5:'5', 6:'4', 7:'3', 8:'2', 9:'1'}
     ranksToCols = {0:'a',1:'b',2:'c',3:'d',4:'e',5:'f',6:'g',7:'h',8:'i'}
@@ -19,6 +21,8 @@ class Move:
         return self.getPosition(self.startRow, self.startCol) +'-->'+ self.getPosition(self.endRow, self.endCol)
     def getPosition(self, row, col):
         return self.ranksToCols[col] + self.ranksToRows[row]
+    def __str__(self):
+       return self.chessManMoved + ' ' + self.getPosition(self.startRow, self.startCol) +'-->'+ self.getPosition(self.endRow, self.endCol) 
 class Soldier:
     def __init__(self, team, position, name):
         self.team = team
@@ -35,30 +39,30 @@ class Soldier:
 class State:
     def __init__(self):
         self.board= [
-            ['bxe','bma','bvo','bsi','btu','bsi','bvo','bma','bxe'],
-            ['---','---','---','---','---','rch','---','---','---'],
+            ['bxe','bma','bvo','---','btu','---','bvo','bma','bxe'],
+            ['---','---','---','rxe','---','rxe','---','---','---'],
             ['---','bph','---','---','---','---','---','bph','---'],
             ['bch','---','---','---','bch','---','bch','rma','bch'],
             ['---','---','---','---','---','---','---','---','---'],
             ['---','---','---','---','---','---','---','---','---'],
             ['rch','---','rch','---','rch','---','---','---','rch'],
             ['---','rph','---','---','---','---','---','rph','---'],
-            ['---','---','---','bch','---','---','---','---','---'],
-            ['rxe','rma','rvo','rsi','rtu','rsi','rvo','---','rxe']
+            ['---','---','---','---','---','---','---','---','---'],
+            ['rxe','rma','rvo','rtu','---','rsi','rvo','---','---']
         ]
         
         # [
-        #     ['bxe','bma','bvo','bsi','btu','bsi','bvo','bma','bxe'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['---','bph','---','---','---','---','---','bph','---'],
-        #     ['bch','---','bch','---','bch','---','bch','---','bch'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['rch','---','rch','---','rch','---','rch','---','rch'],
-        #     ['---','rph','---','---','---','---','---','rph','---'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['rxe','rma','rvo','rsi','rtu','rsi','rvo','rma','rxe']
-        # ]
+            # ['bxe','bma','bvo','bsi','btu','bsi','bvo','bma','bxe'],
+            # ['---','---','---','---','---','---','---','---','---'],
+            # ['---','bph','---','---','---','---','---','bph','---'],
+            # ['bch','---','bch','---','bch','---','bch','---','bch'],
+            # ['---','---','---','---','---','---','---','---','---'],
+            # ['---','---','---','---','---','---','---','---','---'],
+            # ['rch','---','rch','---','rch','---','rch','---','rch'],
+            # ['---','rph','---','---','---','---','---','rph','---'],
+            # ['---','---','---','---','---','---','---','---','---'],
+            # ['rxe','rma','rvo','rsi','rtu','rsi','rvo','rma','rxe']
+        #]
         
         
         # self.chessMan = [[rule.ChessMan(self.board[i][j],(i,j)) if self.board[i][j]!='---' else None for j in range(9)] for i in range(10)]
@@ -72,7 +76,7 @@ class State:
         self.store =[]
         self.selectedCell = ()
         self.blackKing = (0,4)
-        self.redKing = (9,4)
+        self.redKing = (9,3)
         # self.blackCar = [(0,0),(0,8)]
         # self.redCar = [(9,0),(9,9)]
         # self.blackHorse = [(0,1),(0,7)]
@@ -97,6 +101,18 @@ class State:
         #     for j in range(9):
         #         if self.board[i][j] != '---':
         #             self.chessMan[i][j] = rule.ChessMan(self.board[i][j],(i,j))
+        
+    def reverse(self):
+        for i in range(10):
+            for j in range(9):
+                if self.board[i][j][0] == 'r':
+                    self.board[i][j] = 'b'+ self.board[i][j][1:]
+                elif self.board[i][j][0]== 'b':
+                    self.board[i][j] = 'r'+ self.board[i][j][1:]
+        self.blackKing, self.redKing = self.redKing, self.blackKing
+        for soldier in self.listSoldier:
+            soldier.team = 'r' if soldier.team == 'b' else 'b'
+
     def makeMove(self, move: Move):
         statetmp = State()
         statetmp.board = deepcopy(self.board)
@@ -124,10 +140,7 @@ class State:
             if i.position == (move.startRow, move.startCol) and i.live == True and i.team == turn:
                 i.changePos((move.endRow, move.endCol))
                 break
-        for i in statetmp.listSoldier:
-            print(i.name, i.position, i.live)
         
-            
         if not rule.ChessMan.validMove(statetmp):
             print("Loi mat tuong")
             return False
@@ -163,6 +176,7 @@ class State:
             self.redMove = not self.redMove
             self.store =[]            
             print(move.getChange(),'---', self.blackKing, self.redKing)
+            
 
     def reMove(self):
         
@@ -221,7 +235,7 @@ class State:
         self.moveLog.append(deepcopy(self.store.pop()))
         self.redMove = not self.redMove
         print(move.getChange(),'---', self.blackKing, self.redKing)
-        
+    
     def checkValid(self, position):
         x = rule.ChessMan(self.board[position[0]][position[1]])
         return x.type.canMove(self.board, position)
@@ -249,13 +263,16 @@ class State:
         
     def getAllValidMove(self):
         listValid = []
-        turn = 'r'if self.redMove else 'b' # == true if red
-        for i in self.listSoldier:
-            if i.live == True and i.team == turn:
-                chessMan = rule.ChessMan(self.board[i.position[0]][i.position[1]]).type
-                listValid += chessMan.canMove(self.board, i.position)
-                for j in listValid:
-                    move = Move(self, i.position, j)
+        listValidMove = []
+         # == true if red
+        turn = 'r' if self.redMove else 'b'
+        listSoldier = deepcopy(self.listSoldier)
+        for soldier in listSoldier:
+            if soldier.live == True and turn == soldier.team:
+                chessMan = rule.ChessMan(self.board[soldier.position[0]][soldier.position[1]]).type
+                listValid = chessMan.canMove(self.board, soldier.position)
+                for cell in listValid:
+                    move = Move(self, soldier.position, cell)
                     statetmp = State()
                     statetmp.board = deepcopy(self.board)
                     statetmp.redMove = self.redMove
@@ -264,7 +281,6 @@ class State:
                     statetmp.listSoldier = deepcopy(self.listSoldier)
                     statetmp.blackKing = self.blackKing
                     statetmp.redKing = self.redKing
-                    turn = 'r' if self.redMove else 'b'
                     statetmp.board[move.startRow][move.startCol] = '---'
                     statetmp.board[move.endRow][move.endCol] = move.chessManMoved
 
@@ -282,8 +298,30 @@ class State:
                         if i.position == (move.startRow, move.startCol) and i.live == True and i.team == turn:
                             i.changePos((move.endRow, move.endCol))
                             break
-                    for i in statetmp.listSoldier:
-                        print(i.name, i.position, i.live)
+
                     if rule.ChessMan.validMove(statetmp):
-                        listValid.append(move)                
-        return listValid
+                        listValidMove.append(deepcopy(move))               
+        return listValidMove
+    def checkEnd(self):
+        if self.getAllValidMove() == []:
+            return True
+        return False
+    
+    
+    def playWithAI(self):
+        if not self.redMove:
+            play = self.playingRandom()
+            if play:
+                self.makeMove(play)
+            else:
+                print("no move")
+
+    def playingRandom(self):        
+        listMove = deepcopy(self.getAllValidMove())
+        for i in listMove:
+            print("list move: ",i)
+        if listMove != []:
+            move = random.choice(listMove)
+            print("turn of red: ",self.redMove,"----AI move: ",move.chessManMoved," ",move.getChange())
+            return move
+        return None

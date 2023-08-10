@@ -286,7 +286,6 @@ class ChessMan:
             if flag:
                 return False
         if ChessMan.isThreaten(nextBoard):
-            print("Threaten check")
             return False
         return True
     @staticmethod
@@ -306,7 +305,6 @@ class ChessMan:
             team = 'r'
         
         # check if a horse is threatening the king
-        print("turn of ",team)
         ma =[]
         for i in listSoldier:
             if i.name == 'ma' and i.live and i.team != team:
@@ -369,7 +367,6 @@ class ChessMan:
             for i in phao:
                 if i in candidate:
                     phaoLenNong = ChessMan(nextBoard.board[i[0]][i[1]])
-                    print("phao nong at")
                     if (x,y) in phaoLenNong.type.canMove(nextBoard.board,i):
                         print("The king is threatened by a canon")
                         return True

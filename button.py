@@ -27,21 +27,40 @@ class Button:
             else:
                 self.state = 'active'
                 
-        else:
+        elif self.type =='ne':
             if gs.store == []:
                 self.state = 'normal'
             else:
                 self.state = 'active'
-        if self.state =='active':
+        elif self.type =='ex':
+            if gs.moveLog ==[]:
+                self.state = 'active'
+            else:
+                self.state = 'normal'
+        elif self.type == 'st':
+            if gs.moveLog ==[]:
+                self.state = 'normal'
+            else:
+                self.state = 'active'
+        elif self.type == 'pa':
+            if gs.moveLog !=[]:
+                self.state = 'normal'
+            else:
+                self.state = 'active'
+        if self.state =='active' or self.type =='st' or self.type =='pa':
             if self.x <= pos[0] <= self.x + self.width and self.y <= pos[1] <= self.y + self.height:
                 self.state = 'hover'
                 if p.mouse.get_pressed()[0] and not self.isPress:
                     self.state = 'pressed'
                     self.isPress =True
                     self.onClickFunction()
+                    if self.type == 'st' :
+                        self.active = True
                 else:
                     self.isPress = False
-            
-                
-        screen.blit(self.img[self.state], (self.x, self.y))
-
+        if self.type == 'st' and self.active:
+            return
+        if self.type == 'pa' and self.state == 'active':
+            return
+        if self.state:
+            screen.blit(self.img[self.state], (self.x, self.y))
