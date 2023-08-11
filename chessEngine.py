@@ -39,32 +39,30 @@ class Soldier:
 class State:
     def __init__(self):
         self.board= [
-            ['bxe','bma','bvo','---','btu','---','bvo','bma','bxe'],
-            ['---','---','---','rxe','---','rxe','---','---','---'],
+        #     ['bxe','bma','bvo','---','btu','---','bvo','bma','bxe'],
+        #     ['---','---','---','rxe','---','rxe','---','---','---'],
+        #     ['---','bph','---','---','---','---','---','bph','---'],
+        #     ['bch','---','---','---','bch','---','bch','rma','bch'],
+        #     ['---','---','---','---','---','---','---','---','---'],
+        #     ['---','---','---','---','---','---','---','---','---'],
+        #     ['rch','---','rch','---','rch','---','---','---','rch'],
+        #     ['---','rph','---','---','---','---','---','rph','---'],
+        #     ['---','---','---','---','---','---','---','---','---'],
+        #     ['rxe','rma','rvo','rtu','---','rsi','rvo','---','---']
+        # ]
+        
+        #[
+            ['bxe','bma','bvo','bsi','btu','bsi','bvo','bma','bxe'],
+            ['---','---','---','---','---','---','---','---','---'],
             ['---','bph','---','---','---','---','---','bph','---'],
-            ['bch','---','---','---','bch','---','bch','rma','bch'],
+            ['bch','---','bch','---','bch','---','bch','---','bch'],
             ['---','---','---','---','---','---','---','---','---'],
             ['---','---','---','---','---','---','---','---','---'],
-            ['rch','---','rch','---','rch','---','---','---','rch'],
+            ['rch','---','rch','---','rch','---','rch','---','rch'],
             ['---','rph','---','---','---','---','---','rph','---'],
             ['---','---','---','---','---','---','---','---','---'],
-            ['rxe','rma','rvo','rtu','---','rsi','rvo','---','---']
+            ['rxe','rma','rvo','rsi','rtu','rsi','rvo','rma','rxe']
         ]
-        
-        # [
-            # ['bxe','bma','bvo','bsi','btu','bsi','bvo','bma','bxe'],
-            # ['---','---','---','---','---','---','---','---','---'],
-            # ['---','bph','---','---','---','---','---','bph','---'],
-            # ['bch','---','bch','---','bch','---','bch','---','bch'],
-            # ['---','---','---','---','---','---','---','---','---'],
-            # ['---','---','---','---','---','---','---','---','---'],
-            # ['rch','---','rch','---','rch','---','rch','---','rch'],
-            # ['---','rph','---','---','---','---','---','rph','---'],
-            # ['---','---','---','---','---','---','---','---','---'],
-            # ['rxe','rma','rvo','rsi','rtu','rsi','rvo','rma','rxe']
-        #]
-        
-        
         # self.chessMan = [[rule.ChessMan(self.board[i][j],(i,j)) if self.board[i][j]!='---' else None for j in range(9)] for i in range(10)]
         # self.chessMan = [[rule.ChessMan('---') for _ in range(8)] for _ in range(9)]
         # for i in range(10):
@@ -76,7 +74,8 @@ class State:
         self.store =[]
         self.selectedCell = ()
         self.blackKing = (0,4)
-        self.redKing = (9,3)
+        self.redKing = (9,4)
+        self.after = False
         # self.blackCar = [(0,0),(0,8)]
         # self.redCar = [(9,0),(9,9)]
         # self.blackHorse = [(0,1),(0,7)]
@@ -90,6 +89,7 @@ class State:
         # self.blackCannon = [(2,1),(2,7)]
         # self.redCannon = [(7,1),(7,7)]
         self.listSoldier = []
+        self.isStart = False
         for i in range(10):
             for j in range(9):
                 value = self.board[i][j]
@@ -112,7 +112,7 @@ class State:
         self.blackKing, self.redKing = self.redKing, self.blackKing
         for soldier in self.listSoldier:
             soldier.team = 'r' if soldier.team == 'b' else 'b'
-
+        self.after = not self.after
     def makeMove(self, move: Move):
         statetmp = State()
         statetmp.board = deepcopy(self.board)
@@ -238,7 +238,7 @@ class State:
     
     def checkValid(self, position):
         x = rule.ChessMan(self.board[position[0]][position[1]])
-        return x.type.canMove(self.board, position)
+        return x.type.canMove(self.board, position, self.after)
     
     def checkMate(self):
         position = (self.moveLog[-1].endRow, self.moveLog[-1].endCol) if len(self.moveLog)>0 else None
@@ -270,7 +270,7 @@ class State:
         for soldier in listSoldier:
             if soldier.live == True and turn == soldier.team:
                 chessMan = rule.ChessMan(self.board[soldier.position[0]][soldier.position[1]]).type
-                listValid = chessMan.canMove(self.board, soldier.position)
+                listValid = chessMan.canMove(self.board, soldier.position, self.after)
                 for cell in listValid:
                     move = Move(self, soldier.position, cell)
                     statetmp = State()
@@ -309,12 +309,21 @@ class State:
     
     
     def playWithAI(self):
-        if not self.redMove:
-            play = self.playingRandom()
-            if play:
-                self.makeMove(play)
-            else:
-                print("no move")
+        turn = True if self.after else False
+        if turn:
+            if self.redMove:
+                play = self.playingRandom()
+                if play:
+                    self.makeMove(play)
+                else:
+                    print("no move")
+        else:
+            if not self.redMove:
+                play = self.playingRandom()
+                if play:
+                    self.makeMove(play)
+                else:
+                    print("no move")
 
     def playingRandom(self):        
         listMove = deepcopy(self.getAllValidMove())

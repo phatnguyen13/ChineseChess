@@ -7,7 +7,7 @@ class AbstractChess(ABC):
         def canMove(self,board):
             pass
 class Xe(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSideDown):
         cells =[]
         team = board[position[0]][position[1]][0]
         i = position[0]
@@ -46,7 +46,7 @@ class Xe(AbstractChess):
     def __str__(self):
         return "XE"
 class Ma(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSideDown):
         cells =[]
         team = board[position[0]][position[1]][0]
         nowRow = position[0]
@@ -82,84 +82,104 @@ class Ma(AbstractChess):
     def __str__(self):
         return "MA"
 class Voi(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSideDown):
         cells =[]
         team = board[position[0]][position[1]][0]
         i = position[0]
         j = position[1]
         candidate = [(i+2,j+2),(i+2,j-2),(i-2,j+2),(i-2,j-2)]
-        
-        if team == 'b':
-            for x in candidate:
-                if 0<=x[0]<5 and 0<=x[1]<10:
-                    if board[int((i+x[0])/2)][int((j+x[1])/2)]=='---' and board[x[0]][x[1]][0] != team:
-                        cells += [x]
+        if not upSideDown:
+            if team == 'b':
+                for x in candidate:
+                    if 0<=x[0]<5 and 0<=x[1]<10:
+                        if board[int((i+x[0])/2)][int((j+x[1])/2)]=='---' and board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                for x in candidate:
+                    if 4<x[0]<10 and 0<=x[1]<10:
+                        if board[int((i+x[0])/2)][int((j+x[1])/2)]=='---' and board[x[0]][x[1]][0] != team:
+                            cells += [x]
         else:
-            for x in candidate:
-                if 4<x[0]<10 and 0<=x[1]<10:
-                    if board[int((i+x[0])/2)][int((j+x[1])/2)]=='---' and board[x[0]][x[1]][0] != team:
-                        cells += [x]
+            if team == 'b':
+                for x in candidate:
+                    if 5<=x[0]<10 and 0<=x[1]<10:
+                        if board[int((i+x[0])/2)][int((j+x[1])/2)]=='---' and board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                for x in candidate:
+                    if 0<=x[0]<6 and 0<=x[1]<10:
+                        if board[int((i+x[0])/2)][int((j+x[1])/2)]=='---' and board[x[0]][x[1]][0] != team:
+                            cells += [x]
         return cells
     def __str__(self):
         return "VOI"
 class Si(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSideDown):
         cells=[]
         i = position[0]
         j = position[1]
         team = board[position[0]][position[1]][0]
-        if team == 'b':
-            candidate = [(i+1,j+1),(i+1,j-1),(i-1,j+1),(i-1,j-1)]
-            for x in candidate:
-                if 0<=x[0]<3 and 3<=x[1]<6:
-                    if board[x[0]][x[1]][0] != team:
-                        cells += [x]
+        candidate = [(i+1,j+1),(i+1,j-1),(i-1,j+1),(i-1,j-1)]
+        if not upSideDown:
+            if team == 'b':
+                for x in candidate:
+                    if 0<=x[0]<3 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                
+                for x in candidate:
+                    if 7<=x[0]<10 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
         else:
-            candidate = [(i+1,j+1),(i+1,j-1),(i-1,j+1),(i-1,j-1)]
-            for x in candidate:
-                if 7<=x[0]<10 and 3<=x[1]<6:
-                    if board[x[0]][x[1]][0] != team:
-                        cells += [x]
+            if team == 'b':
+                for x in candidate:
+                    if 7<=x[0]<10 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                for x in candidate:
+                    if 0<=x[0]<3 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
         return cells
     def __str__(self):
         return "SI"
 class Tuong(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSideDown):
         cells=[]
         i = position[0]
         j = position[1]
         team = board[position[0]][position[1]][0]
         candidate = [(i+1,j),(i,j+1),(i,j-1),(i-1,j)]
-        if team == 'b':
-            for x in candidate:
-                if 0<=x[0]<3 and 3<=x[1]<6:
-                    if board[x[0]][x[1]][0] != team:
-                        # flag = False
-                        # for y in range(x[0],10):
-                        #     if board[y][x[1]][1:] == 'tu':
-                        #         flag =True
-                        #         break
-                        #     elif board[y][x[1]] != '---':
-                        #         break
-                        # if not flag:
-                        cells += [x]
+        if not upSideDown:
+            if team == 'b':
+                for x in candidate:
+                    if 0<=x[0]<3 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                for x in candidate:
+                    if 7<=x[0]<10 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
         else:
-            for x in candidate:
-                if 7<=x[0]<10 and 3<=x[1]<6:
-                    if board[x[0]][x[1]][0] != team:
-                        # flag = False
-                        # for y in range(x[0],-1,-1):
-                        #     if board[y][x[1]][1:] == 'tu':
-                        #         flag =True
-                        #         break
-                        #     elif board[y][x[1]] != '---':
-                        #         break
-                        cells += [x]
+            if team == 'b':
+                for x in candidate:
+                    if 7<=x[0]<10 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                for x in candidate:
+                    if 0<=x[0]<3 and 3<=x[1]<6:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
         return cells    
     def __str__(self):
         return "TUONGs"
 class Phao(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSidedown):
         cells=[]
         i = position[0]
         j = position[1]
@@ -176,7 +196,7 @@ class Phao(AbstractChess):
                         break
                 break
         for x in range(i-1,-1,-1):
-            if board[x][j] == '---' and board[x][j][0] != team:
+            if board[x][j] == '---' :
                 cells += [(x,j)]
             else: 
                 for y in range(x-1,-1,-1):
@@ -187,7 +207,7 @@ class Phao(AbstractChess):
                         break
                 break
         for y in range(j+1,9):
-            if board[i][y] =='---' and board[i][y][0] != team:
+            if board[i][y] =='---' :
                 cells += [(i,y)]
             else:
                 for x in range(y+1,9):
@@ -198,7 +218,7 @@ class Phao(AbstractChess):
                         break
                 break
         for y in range(j-1,-1,-1):
-            if board[i][y] =='---' and board[i][y][0] != team:
+            if board[i][y] =='---' :
                 cells += [(i,y)]
             else: 
                 for x in range(y-1,-1,-1):
@@ -212,28 +232,46 @@ class Phao(AbstractChess):
     def __str__(self):
         return "PHAO"
 class Chot(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSideDown):
         cells=[]
         i = position[0]
         j = position[1]
         team = board[position[0]][position[1]][0]
         
-        if team =='b':
-            candidate =[(i+1,j)]
-            if i > 4:
-                candidate += [(i,j+1),(i,j-1)]
-            for x in candidate:
-                if 0<=x[0]<10 and 0<=x[1]<9:
-                    if board[x[0]][x[1]][0] != team:
-                        cells += [x]
+        if not upSideDown:
+            if team =='b':
+                candidate =[(i+1,j)]
+                if i > 4:
+                    candidate += [(i,j+1),(i,j-1)]
+                for x in candidate:
+                    if 0<=x[0]<10 and 0<=x[1]<9:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                candidate = [(i-1,j)]
+                if i<5:
+                    candidate += [(i,j+1),(i,j-1)]
+                for x in candidate:
+                    if 0<=x[0]<10 and 0<=x[1]<9:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
         else:
-            candidate = [(i-1,j)]
-            if i<5:
-                candidate += [(i,j+1),(i,j-1)]
-            for x in candidate:
-                if 0<=x[0]<10 and 0<=x[1]<9:
-                    if board[x[0]][x[1]][0] != team:
-                        cells += [x]
+            if team =='b':
+                candidate =[(i-1,j)]
+                if i < 5:
+                    candidate += [(i,j+1),(i,j-1)]
+                for x in candidate:
+                    if 0<=x[0]<10 and 0<=x[1]<9:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
+            else:
+                candidate = [(i+1,j)]
+                if i>4:
+                    candidate += [(i,j+1),(i,j-1)]
+                for x in candidate:
+                    if 0<=x[0]<10 and 0<=x[1]<9:
+                        if board[x[0]][x[1]][0] != team:
+                            cells += [x]
         return cells
     def __str__(self):
         return "CHOT"
@@ -295,7 +333,7 @@ class ChessMan:
         bk = nextBoard.blackKing
         rk = nextBoard.redKing
         turn = not nextBoard.redMove
-        
+        after = nextBoard.after
         x = bk[0]
         y = bk[1]
         team = 'b'
@@ -314,7 +352,7 @@ class ChessMan:
             for i in ma:
                 if i in candidate:
                     maChien = ChessMan(nextBoard.board[i[0]][i[1]])
-                    if (x,y) in maChien.type.canMove(nextBoard.board,i):
+                    if (x,y) in maChien.type.canMove(nextBoard.board,i,after):
                         print("The king is threatened by a horse")
                         return True
         # check if a car is threatening the king
@@ -367,7 +405,7 @@ class ChessMan:
             for i in phao:
                 if i in candidate:
                     phaoLenNong = ChessMan(nextBoard.board[i[0]][i[1]])
-                    if (x,y) in phaoLenNong.type.canMove(nextBoard.board,i):
+                    if (x,y) in phaoLenNong.type.canMove(nextBoard.board,i,False):
                         print("The king is threatened by a canon")
                         return True
         # check if a king is threatened by a soldier
@@ -380,7 +418,7 @@ class ChessMan:
             for i in tot:
                 if i in candidate:
                     totChien = ChessMan(nextBoard.board[i[0]][i[1]])
-                    if (x,y) in totChien.type.canMove(nextBoard.board,i):
+                    if (x,y) in totChien.type.canMove(nextBoard.board,i,after):
                         print("The king is threatened by a soldier")
                         return True
         return False

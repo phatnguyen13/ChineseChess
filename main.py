@@ -36,29 +36,36 @@ def mainLoop():
     run = True
     listClick=[]
     cell =()
-    objects=[]
+    
+    objects=()
     backwardBut = b.Button(s.BACKWARD_X, s.BACKWARD_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'re', l.loadButton('backward'), gs.reMove)
     nextstepBut = b.Button(s.NEXTSTEP_X, s.NEXTSTEP_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ne', l.loadButton('nextstep'), gs.nextMove)
-    reverseBut = b.Button(s.REVERSE_X, s.REVERSE_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ex', l.loadButton('reverse'), gs.reverse)
+    reverseBut = b.SButton(s.REVERSE_X, s.REVERSE_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ex', l.loadButton('reverse'), gs.reverse)
     startBut = b.Button(s.START_X, s.START_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'st', l.loadButton('start'), startGame)
-    playAgainBut = b.Button(s.REPLAY_X, s.REPLAY_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'pa', l.loadButton('replay'), playAgainGame)
+    playAgainBut = b.SButton(s.REPLAY_X, s.REPLAY_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'pa', l.loadButton('replay'), playAgainGame)
     
-    objects.append(backwardBut)
-    objects.append(nextstepBut)
-    objects.append(reverseBut)
-    objects.append(startBut)
+    # objects.append(backwardBut)
+    # objects.append(nextstepBut)
+    # objects.append(reverseBut)
+    # objects.append(startBut)
+    objects += (backwardBut,nextstepBut,reverseBut,startBut,playAgainBut)
     while run:
         drawGameState(screen,gs)
         global st
         global pa
+        
         for e in p.event.get():
+            
             if e.type == p.QUIT:
                 run = False
             
             elif e.type == p.MOUSEBUTTONDOWN:
+                print("clickk")
                 if st == False: continue
+                print("click success")
                 start = s.GRID
                 pos = p.mouse.get_pos() 
+              
                 row = int((pos[1]-start[0])//start[2])
                 col = int((pos[0]-start[1])//start[2])
                 if row >9 or col >8 or row <0 or col <0:
@@ -86,21 +93,24 @@ def mainLoop():
                                 move = chessEngine.Move(gs,listClick[0], listClick[1])
                                 gs.makeMove(move)
                                 if not gs.checkEnd():
-                                    print("AI turn: ",not gs.redMove)
+                                    print("AI turn: ", not gs.redMove)
                                     gs.playWithAI()
                                 else:
                                     print("you win")
-                                    objects.append(playAgainBut)
                                     if pa:
                                         print("start game")
-                                        objects.append(playAgainBut)
                                         
-                                drawChessMate(screen,gs)
+                                        
+                                        
+                                #drawChessMate(screen,gs)
                             listClick =[]
                         gs.selectedCell = ()
-            elif pa:
-                pa = False
-                main()    
+            elif gs.after and st:
+                gs.playWithAI()
+        if pa:
+            pa = False
+            print("play again chuaw")
+            main()    
         for o in objects:
             o.process(screen,gs)
         drawFoot(screen,gs)
@@ -124,6 +134,8 @@ def drawGameState(screen,gs):
     if gs.selectedCell != ():
         drawValid(screen,gs)
         screen.blit(squareImg, p.Rect(s.GRID[1]+ gs.selectedCell[1]*s.GRID[2],s.GRID[0]+gs.selectedCell[0]*s.GRID[2], s.CELL_SIZE, s.CELL_SIZE))
+    if gs.checkMate():
+        drawChessMate(screen,gs)
     if gs.checkEnd():
         drawEndGame(screen,gs)
 def drawChessMan(screen,board):
@@ -155,46 +167,6 @@ def drawEndGame(screen, gs: chessEngine.State):
         textSurface = myFont.render('End game', False, (0, 0, 0))
         screen.blit(textSurface,(s.WIDTH/2 - textSurface.get_width()/2, s.SCREEN_HEIGHT/2 - textSurface.get_height()/2))
 
-
-# def drawButton(screen, gs):
-#     if gs.moveLog == []:
-#         backward = l.loadButton('backward')
-#         nextstep = l.loadButton('nextstep')
-#     else:
-#         backward = l.loadButton('backwardActive')
-#         nextstep = l.loadButton('nextstepActive')
-#     screen.blit(backward,(s.WIDTH, s.HEIGHT/2 - s.BUT_HEIGHT/2 ))
-#     screen.blit(nextstep,(s.SCREEN_WIDTH -s.BUT_WIDTH,  s.HEIGHT/2 - s.BUT_HEIGHT/2))
-# def drawClick(screen, type ,held):
-#     global paused
-#     mouse = p.mouse.get_pos()
-#     click = p.mouse.get_pressed()
-#     if type == 'backward':
-#         backward = l.loadButton('backwardClick')
-#         screen.blit(backward,(s.WIDTH, s.HEIGHT/2 - s.BUT_HEIGHT/2 ))
-#         p.display.update()
-#         if click[0] ==1:
-#             if held ==False:
-                
-        # delayTime = 100
-        #thisEvent = p.USEREVENT + 1
-        # p.time.set_timer(thisEvent, delayTime)
-    #     run =True
-    #     while run:
-    #         for e in p.event.get():
-    #             if e.type == p.QUIT:
-    #                 run = False
-    #             else:
-    #                 screen.blit(backward,(s.WIDTH, s.HEIGHT/2 - s.BUT_HEIGHT/2 ))
-    #                 p.display.update()
-    #                 p.time.delay(100)
-    #                 break
-    #             run = False
-    #     p.quit()
-    #     quit()
-    # elif type == 'nextstep':
-    #     nextstep = l.loadButton('nextstepClick')
-    #     screen.blit(nextstep,(s.SCREEN_WIDTH -s.BUT_WIDTH,  s.HEIGHT/2 - s.BUT_HEIGHT/2))
 
 if __name__ == '__main__':
     main()
