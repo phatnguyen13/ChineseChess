@@ -1,12 +1,28 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
+import csv
 import chessEngine
 
 class AbstractChess(ABC):
         @abstractmethod
         def canMove(self,board):
             pass
+position = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
+for i in position.keys():
+    name = i+'.csv'
+    with open ('C:/Users/OnDoing/ChineseChess/unity/'+name, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            for r in range(len(row)):
+                row[r] = float(row[r])
+            position[i] += [row]
+bposition = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
+for i in position.keys():
+    bposition[i] = position[i][::-1]
+    
 class Xe(AbstractChess):
+    power = 10
+    
     def canMove(self,board,position,upSideDown):
         cells =[]
         team = board[position[0]][position[1]][0]
@@ -46,6 +62,7 @@ class Xe(AbstractChess):
     def __str__(self):
         return "XE"
 class Ma(AbstractChess):
+    power = 7
     def canMove(self,board,position,upSideDown):
         cells =[]
         team = board[position[0]][position[1]][0]
@@ -55,7 +72,6 @@ class Ma(AbstractChess):
             if board[nowRow][nowCol+1]=='---':
                 if nowCol+2 < 9 and nowRow+1 < 10 and (board[nowRow+1][nowCol+2] == '---' or board[nowRow+1][nowCol+2][0] != team):
                     cells += [(nowRow+1,nowCol+2)]
-
                 if nowCol+2 < 9 and nowRow-1 >= 0 and (board[nowRow-1][nowCol+2] == '---' or board[nowRow-1][nowCol+2][0] != team):
                     cells += [(nowRow-1,nowCol+2)]
         if nowCol -1 >=0:
@@ -82,6 +98,7 @@ class Ma(AbstractChess):
     def __str__(self):
         return "MA"
 class Voi(AbstractChess):
+    power = 2
     def canMove(self,board,position,upSideDown):
         cells =[]
         team = board[position[0]][position[1]][0]
@@ -114,6 +131,7 @@ class Voi(AbstractChess):
     def __str__(self):
         return "VOI"
 class Si(AbstractChess):
+    power = 1
     def canMove(self,board,position,upSideDown):
         cells=[]
         i = position[0]
@@ -147,6 +165,7 @@ class Si(AbstractChess):
     def __str__(self):
         return "SI"
 class Tuong(AbstractChess):
+    power = 100
     def canMove(self,board,position,upSideDown):
         cells=[]
         i = position[0]
@@ -179,6 +198,7 @@ class Tuong(AbstractChess):
     def __str__(self):
         return "TUONGs"
 class Phao(AbstractChess):
+    power = 7
     def canMove(self,board,position,upSidedown):
         cells=[]
         i = position[0]
@@ -232,6 +252,19 @@ class Phao(AbstractChess):
     def __str__(self):
         return "PHAO"
 class Chot(AbstractChess):
+    power = 2
+    position =[
+        [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+        [0.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  0.0],
+        [1.0,  1.0,  2.0,  3.0,  3.0,  2.0,  1.0,  1.0,  0.0],
+        [0.5,  0.5,  1.0,  2.5,  2.5,  1.0,  0.5,  0.5,  0.0],
+        [0.0,  0.0,  0.0,  2.0,  2.0,  0.0,  0.0,  0.0,  0.0],
+        [0.5, -0.5, -1.0,  0.0,  0.0, -1.0, -0.5,  0.5,  0.0],
+        [0.5,  0.0,  1.0,  0.0,  1.0,  1.0,  1.0,  1.0,  0.0],
+        [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+        [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+        [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
+    ]
     def canMove(self,board,position,upSideDown):
         cells=[]
         i = position[0]
@@ -275,14 +308,12 @@ class Chot(AbstractChess):
         return cells
     def __str__(self):
         return "CHOT"
+    
 class Empty(AbstractChess):
-    def canMove(self,board,position):
+    def canMove(self,board,position,upSideDown):
         return []   
     def __str__(self):
         return "EMPTY"
-
-
-
 
 
 class ChessMan:

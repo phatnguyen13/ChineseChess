@@ -32,12 +32,28 @@ board= [
             ['---','---','---','---','---','---','---','---','---'],
             ['rxe','rma','rvo','rsi','rtu','rsi','rvo','rma','rxe']
         ]
-for i in range(10):
-    for j in range(9):
-        if board[i][j][0] == 'r':
-            board[i][j] = 'b'+ board[i][j][1:]
-        elif board[i][j][0]== 'b':
-            board[i][j] = 'r'+ board[i][j][1:]
+# for i in range(10):
+#     for j in range(9):
+#         if board[i][j][0] == 'r':
+#             board[i][j] = 'b'+ board[i][j][1:]
+#         elif board[i][j][0]== 'b':
+#             board[i][j] = 'r'+ board[i][j][1:]
             
-print(board)
+# print(board)
+import csv
+position = {'xe':[], 'ma':[], 'tuong':[], 'si':[], 'tuong':[], 'phao':[], 'chot':[]}
+for i in position.keys():
+    name = i+'.csv'
+    with open ('C:/Users/OnDoing/ChineseChess/unity/'+name, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            for r in range(len(row)):
+                row[r] = float(row[r])
+            position[i] += [row]
+            
+            
+# for i in position.keys():
+#     print(i, position[i])
 
+bxe = position['xe'][::-1]
+print(bxe)

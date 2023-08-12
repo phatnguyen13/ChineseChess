@@ -38,8 +38,8 @@ def mainLoop():
     cell =()
     
     objects=()
-    backwardBut = b.Button(s.BACKWARD_X, s.BACKWARD_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'re', l.loadButton('backward'), gs.reMove)
-    nextstepBut = b.Button(s.NEXTSTEP_X, s.NEXTSTEP_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ne', l.loadButton('nextstep'), gs.nextMove)
+    backwardBut = b.Button(s.BACKWARD_X, s.BACKWARD_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'re', l.loadButton('backward'), gs.reMoveReal)
+    nextstepBut = b.Button(s.NEXTSTEP_X, s.NEXTSTEP_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ne', l.loadButton('nextstep'), gs.nextMoveReal)
     reverseBut = b.SButton(s.REVERSE_X, s.REVERSE_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'ex', l.loadButton('reverse'), gs.reverse)
     startBut = b.Button(s.START_X, s.START_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'st', l.loadButton('start'), startGame)
     playAgainBut = b.SButton(s.REPLAY_X, s.REPLAY_Y, s.BUT_WIDTH, s.BUT_HEIGHT,'pa', l.loadButton('replay'), playAgainGame)
@@ -49,6 +49,10 @@ def mainLoop():
     # objects.append(reverseBut)
     # objects.append(startBut)
     objects += (backwardBut,nextstepBut,reverseBut,startBut,playAgainBut)
+    print("AI random: 1")
+    print("AI minimax: 2")
+    print("input 1 or 2: ")
+    x=input()
     while run:
         drawGameState(screen,gs)
         global st
@@ -60,19 +64,14 @@ def mainLoop():
                 run = False
             
             elif e.type == p.MOUSEBUTTONDOWN:
-                print("clickk")
                 if st == False: continue
-                print("click success")
+                
                 start = s.GRID
                 pos = p.mouse.get_pos() 
               
                 row = int((pos[1]-start[0])//start[2])
                 col = int((pos[0]-start[1])//start[2])
                 if row >9 or col >8 or row <0 or col <0:
-                    # if row ==4 and col ==11:
-                    #     drawClick(screen,'backward')
-                    # elif row == 4 and col ==12:
-                    #     drawClick(screen,'nextstep')
                     break
                 if listClick ==[]:
                     if (gs.redMove and gs.board[row][col][0] == 'b') or (not gs.redMove and gs.board[row][col][0] == 'r'): break
@@ -92,25 +91,30 @@ def mainLoop():
                             if listClick[1] in listValid:
                                 move = chessEngine.Move(gs,listClick[0], listClick[1])
                                 gs.makeMove(move)
-                                if not gs.checkEnd():
-                                    print("AI turn: ", not gs.redMove)
-                                    gs.playWithAI()
-                                else:
-                                    print("you win")
-                                    if pa:
-                                        print("start game")
+                                # if not gs.checkEnd()[0]:
+                                #     print("AI turn: ", not gs.redMove)
+                                #     gs.playWithAI()
+                                # else:
+                                #     print( "win")
+                                #     if pa:
+                                #         print("start game")
                                         
                                         
                                         
                                 #drawChessMate(screen,gs)
                             listClick =[]
                         gs.selectedCell = ()
-            elif gs.after and st:
-                gs.playWithAI()
+            # elif gs.after and st:
+            #     gs.playWithAI()
+            if st:
+                if x=='1':
+                    gs.playWithAI()
+                elif x=='2':
+                    gs.playWithAI2()
         if pa:
             pa = False
-            print("play again chuaw")
             main()    
+            
         for o in objects:
             o.process(screen,gs)
         drawFoot(screen,gs)
@@ -155,18 +159,20 @@ def drawFoot(screen, gs: chessEngine.State):
     screen.blit(squareImg, p.Rect(s.GRID[1]+ startCol*s.GRID[2],s.GRID[0]+startRow*s.GRID[2], s.CELL_SIZE, s.CELL_SIZE))
     screen.blit(squareImg, p.Rect(s.GRID[1]+ endCol*s.GRID[2],s.GRID[0]+endRow*s.GRID[2], s.CELL_SIZE, s.CELL_SIZE))
 def drawChessMate(screen, gs: chessEngine.State):
-    if gs.checkMate():
+    if gs.checkMate() and not gs.checkEnd()[0]:
         p.font.init()
         myFont = p.font.SysFont('Comic Sans MS', 30)
         textSurface = myFont.render('Checkmate', False, (0, 0, 0))
         screen.blit(textSurface,(s.WIDTH/2 - textSurface.get_width()/2, s.SCREEN_HEIGHT/2 - textSurface.get_height()/2))
+    else:
+        return
 def drawEndGame(screen, gs: chessEngine.State):
-    if gs.checkEnd():
+    if gs.checkEnd()[0]:
+        winner= 'RED' if gs.checkEnd()[1] =='r' else 'BLACK'
         p.font.init()
         myFont = p.font.SysFont('Comic Sans MS', 30)
-        textSurface = myFont.render('End game', False, (0, 0, 0))
+        textSurface = myFont.render(winner + " WIN", False, (0, 0, 0))
         screen.blit(textSurface,(s.WIDTH/2 - textSurface.get_width()/2, s.SCREEN_HEIGHT/2 - textSurface.get_height()/2))
-
 
 if __name__ == '__main__':
     main()

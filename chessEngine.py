@@ -1,7 +1,7 @@
 import rule
 from copy import deepcopy
 import random
-import playWithMachine as pWM
+import playWithMachine as pwm
 class Move:
     ranksToRows = {0:'10',1:'9', 2:'8', 3:'7', 4:'6', 5:'5', 6:'4', 7:'3', 8:'2', 9:'1'}
     ranksToCols = {0:'a',1:'b',2:'c',3:'d',4:'e',5:'f',6:'g',7:'h',8:'i'}
@@ -177,9 +177,13 @@ class State:
             self.store =[]            
             print(move.getChange(),'---', self.blackKing, self.redKing)
             
-
+    def reMoveReal(self):
+        self.reMove()
+        self.reMove()
+    def nextMoveReal(self):
+        self.nextMove()
+        self.nextMove()
     def reMove(self):
-        
         if len(self.moveLog) == 0:
             return
         move = deepcopy(self.moveLog[-1]) #g6h8
@@ -193,7 +197,7 @@ class State:
             else:
                 self.redKing = (move.startRow, move.startCol)
         # ban lai su song
-        if move.chessCaptured != '---' :
+        if move.chessCaptured != '---':
             for i in self.listSoldier:
                 if i.position == (move.endRow, move.endCol) and i.live == False and i.team == turn :
                     i.live = True
@@ -304,33 +308,54 @@ class State:
         return listValidMove
     def checkEnd(self):
         if self.getAllValidMove() == []:
-            return True
-        return False
+            return True, 'b' if self.redMove else 'r'
+        return False,""
     
-    
+    def evaluate(self):
+        e = 0
+        if self.checkEnd()[0]:    
+            e += 100000 if (self.checkEnd()[1]=='b' and self.after) or (self.checkEnd()[1]=='r' and not self.after)  else 0
+            e += -100000 if (self.checkEnd()[1]=='b' and not self.after) or (self.checkEnd()[1]=='r' and self.after)  else 0
+        for sold in self.listSoldier:
+            if sold.live:
+                chessMan = rule.ChessMan(self.board[sold.position[0]][sold.position[1]]).type
+                if sold.team == 'r':
+                    e += chessMan.power + rule.position[sold.name][sold.position[0]][sold.position[1]]
+                else:
+                    e -= (chessMan.power + rule.bposition[sold.name][sold.position[0]][sold.position[1]])
+
+        return -e if self.after and self.redMove else (-e if not self.after and not self.redMove else e)
     def playWithAI(self):
         turn = True if self.after else False
         if turn:
             if self.redMove:
-                play = self.playingRandom()
+                play = pwm.playingRandom(self)
                 if play:
                     self.makeMove(play)
                 else:
                     print("no move")
         else:
             if not self.redMove:
-                play = self.playingRandom()
+                play = pwm.playingRandom(self)
                 if play:
                     self.makeMove(play)
                 else:
                     print("no move")
-
-    def playingRandom(self):        
-        listMove = deepcopy(self.getAllValidMove())
-        for i in listMove:
-            print("list move: ",i)
-        if listMove != []:
-            move = random.choice(listMove)
-            print("turn of red: ",self.redMove,"----AI move: ",move.chessManMoved," ",move.getChange())
-            return move
-        return None
+    def playWithAI2(self):
+        # play = pwm.playingWithCalCu(self)
+        # self.makeMove(play) if play and self.after and self.redMove else (self.makeMove(play) if play and not self.after and not self.redMove else print("no move"))
+        turn = True if self.after else False
+        if turn:
+            if self.redMove:
+                play = pwm.playingWithCalCu(self)
+                if play:
+                    self.makeMove(play)
+                else:
+                    print("no move")
+        else:
+            if not self.redMove:
+                play = pwm.playingWithCalCu(self)
+                if play:
+                    self.makeMove(play)
+                else:
+                    print("no move")
