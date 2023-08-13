@@ -1,6 +1,7 @@
 import random
 from copy import deepcopy
-#import chessEngine as s
+import chessEngine as s
+
 def playingRandom(state):        
     listMove = deepcopy(state.getAllValidMove())
     for i in listMove:
@@ -13,12 +14,14 @@ def playingRandom(state):
 
 
 class Minimax:
-    def __init__(self, maxDepth, player):
+    def __init__(self, maxDepth, state):
         self.maxDepth = maxDepth
-        self.player = player
         self.nodeExpand = 0
+        
 
     def playMinimax(self, initialState, depth, isMaximizingPlayer, alpha=float('-inf'), beta=float('inf')):
+        
+        state = s.State()
         state = deepcopy(initialState)
         
         if depth == self.maxDepth or state.checkEnd()[0]:
@@ -31,17 +34,17 @@ class Minimax:
             state.makeMove(move)   
             
             evalChild, actionChild = self.playMinimax(state, depth+1, not isMaximizingPlayer, alpha, beta)
-            state.reMove()
-            print("evalChild: ",evalChild," actionChild: ",actionChild)
+
+            print("evalChild: ",evalChild," actionChild: ",actionChild, "node expand: ", self.nodeExpand)
             if isMaximizingPlayer and bestValue < evalChild:
                 bestValue = evalChild
-                bestAction = move
+                bestAction = deepcopy(move)
                 alpha = max(alpha, bestValue)
                 if beta <= alpha:
                     break
             elif not isMaximizingPlayer and bestValue > evalChild:
                 bestValue = evalChild
-                bestAction = move
+                bestAction = deepcopy(move)
                 beta = min(beta, bestValue)
                 if beta <= alpha:
                     break
@@ -49,7 +52,7 @@ class Minimax:
         
 def playingWithCalCu(state):
     
-    minimax = Minimax(3, state.redMove)
+    minimax = Minimax(3, state.redMove) 
     move = minimax.playMinimax(state, 0, state.redMove)[1]
     if move != None:
         print("minimax play")
