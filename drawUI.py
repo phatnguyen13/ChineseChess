@@ -21,14 +21,17 @@ def drawGameState(screen,gs,st):
     if gs.selectedCell != ():
         drawValid(screen,gs)
         screen.blit(squareImg, p.Rect(s.GRID[1]+ gs.selectedCell[1]*s.GRID[2],s.GRID[0]+gs.selectedCell[0]*s.GRID[2], s.CELL_SIZE, s.CELL_SIZE))
+
     if gs.checkMate():
+        print("checkmake")
         drawChessMate(screen,gs)
     elif (gs.after and gs.redMove) or (not gs.after and not gs.redMove):
-        drawAIThink(screen) if st else None
-    if gs.checkEnd():
-        drawEndGame(screen,gs)
+        drawAIThink(screen) if st and not gs.checkEnd() else None
     # if (gs.after and gs.redMove) or (not gs.after and not gs.redMove):
     #     drawAIThink(screen) if st else None
+    if gs.checkEnd()[0]:
+        print("end")
+        drawEndGame(screen,gs)
 def drawChessMan(screen,board):
     start = s.GRID
     for i in range(s.DIMENSION+1):
@@ -54,9 +57,12 @@ def drawChessMate(screen, gs: chessEngine.State):
     else:
         return
 def drawEndGame(screen, gs: chessEngine.State):
+    print("end game")
     if gs.checkEnd()[0]:
+        
         winner= 'RED' if gs.checkEnd()[1] =='r' else 'BLACK'
         p.font.init()
+        print(winner," WIN")
         myFont = p.font.SysFont('Comic Sans MS', 30)
         textSurface = myFont.render(winner + " WIN", False, (0, 0, 0))
         screen.blit(textSurface,(s.WIDTH/2 - textSurface.get_width()/2, s.SCREEN_HEIGHT/2 - textSurface.get_height()/2))

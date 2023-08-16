@@ -5,6 +5,9 @@ import chessEngine
 import button as b
 import playWithMachine as pWM
 import drawUI as draw
+
+
+
 st = False
 pa = False
 def startGame():
@@ -48,14 +51,24 @@ def mainLoop():
     objects += (backwardBut,nextstepBut,reverseBut,startBut,playAgainBut)
     print("AI random: 1")
     print("AI minimax: 2")
-    print("Play alone: 3")
-    print("input 1,3 or 2: ")
+    print("Play alone: 0")
+    print("input 1,0 or 2: ")
     x=input()
     while run:
         global st
         global pa
         draw.drawGameState(screen,gs,st)
         
+        if st:
+                # draw.drawAIThink(screen) 
+                # clock.tick(s.MAX_FPS)
+                # p.display.flip()
+                if x=='0':
+                    pass
+                elif x == '1':
+                    pWM.playWithAI(gs,1)
+                elif x == '2':
+                    pWM.playWithAI(gs,2)
         for e in p.event.get():
             
             if e.type == p.QUIT:
@@ -87,7 +100,7 @@ def mainLoop():
                         else:
                             listValid = gs.checkValid(gs.selectedCell)
                             if listClick[1] in listValid:
-                                move = chessEngine.Move(gs,listClick[0], listClick[1])
+                                move = chessEngine.Move(gs.board,listClick[0], listClick[1])
                                 gs.makeMove(move)
                                 AITurn = True
                                 draw.drawGameState(screen,gs,st)
@@ -95,19 +108,7 @@ def mainLoop():
                                 p.display.flip()
                             listClick =[]
                         gs.selectedCell = ()
-            # elif gs.after and st:
-            #     gs.playWithAI()
-            if st:
-                # draw.drawAIThink(screen) 
-                # clock.tick(s.MAX_FPS)
-                # p.display.flip()
-                if x=='1':
-                    gs.playWithAI()
-                elif x=='2':
-                    gs.playWithAI2()
-                elif x == '3':
-                    pass
-                #AITurn = not AITurn
+            
         if pa:
             pa = False
             main()    

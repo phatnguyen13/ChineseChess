@@ -13,27 +13,25 @@ def playingRandom(state):
     return None
 
 
+
 class Minimax:
-    def __init__(self, maxDepth, state):
+    def __init__(self, maxDepth):
         self.maxDepth = maxDepth
         self.nodeExpand = 0
         
-
-    def playMinimax(self, initialState, depth, isMaximizingPlayer, alpha=float('-inf'), beta=float('inf')):
-        
-        state = s.State()
-        state = deepcopy(initialState)
-        
-        if depth == self.maxDepth or state.checkEnd()[0]:
-            return state.evaluate(), None
+    def playMinimax(self, board, redmove, after, depth, isMaximizingPlayer, alpha=float('-inf'), beta=float('inf')):
+        miniBoard = deepcopy(board)
+        listNextMoves = deepcopy(s.State.getAllValid(miniBoard,redmove,after)) # = [ [(),()],[(),()],[(),()] ]
+        #print("listNextMoves: ",listNextMoves)
+        if depth == self.maxDepth or listNextMoves == []:
+            return s.State.evaluate(miniBoard,redmove, after), None
         self.nodeExpand += 1
-        listNextMoves = deepcopy(state.getAllValidMove())
         
         bestValue = float('-inf') if isMaximizingPlayer else float('inf')
         for move in listNextMoves:
-            state.makeMove(move)   
+            nextboard = deepcopy(s.miniNext(miniBoard,redmove,after,move))
             
-            evalChild, actionChild = self.playMinimax(state, depth+1, not isMaximizingPlayer, alpha, beta)
+            evalChild, actionChild = self.playMinimax(nextboard,not redmove,after, depth+1, not isMaximizingPlayer, alpha, beta)
 
             print("evalChild: ",evalChild," actionChild: ",actionChild, "node expand: ", self.nodeExpand)
             if isMaximizingPlayer and bestValue < evalChild:
@@ -52,9 +50,38 @@ class Minimax:
         
 def playingWithCalCu(state):
     
-    minimax = Minimax(3, state.redMove) 
-    move = minimax.playMinimax(state, 0, state.redMove)[1]
+    minimax = Minimax(3) 
+    move = deepcopy(minimax.playMinimax(state.board, state.redMove, state.after, 0, True)[1])
     if move != None:
-        print("minimax play")
-        return move
+
+        m = s.Move(state.board,move[0],move[1])
+        return m
     return None
+
+
+def playWithAI(state, type):
+    turn = True if state.after else False
+    if turn:
+        if state.redMove:
+            play = None
+            if type == 1:
+                play = playingRandom(state)
+            elif type ==2:
+                play = playingWithCalCu(state)
+                
+            if play:
+                state.makeMove(play)
+            else:
+                print("no move")
+    else:
+        if not state.redMove:
+            play = None
+            if type == 1:
+                play = playingRandom(state)
+            elif type ==2:
+                play = playingWithCalCu(state)
+                
+            if play:
+                state.makeMove(play)
+            else:
+                print("no move")
