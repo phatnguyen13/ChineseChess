@@ -40,20 +40,34 @@ board= [
 #             board[i][j] = 'r'+ board[i][j][1:]
             
 # print(board)
-import csv
-position = {'xe':[], 'ma':[], 'tuong':[], 'si':[], 'tuong':[], 'phao':[], 'chot':[]}
-for i in position.keys():
-    name = i+'.csv'
-    with open ('C:/Users/OnDoing/ChineseChess/unity/'+name, 'r') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            for r in range(len(row)):
-                row[r] = float(row[r])
-            position[i] += [row]
-            
-            
+# import csv
+# position = {'xe':[], 'ma':[], 'tuong':[], 'si':[], 'tuong':[], 'phao':[], 'chot':[]}
 # for i in position.keys():
-#     print(i, position[i])
+#     name = i+'.csv'
+#     with open ('C:/Users/OnDoing/ChineseChess/unity/'+name, 'r') as f:
+#         reader = csv.reader(f)
+#         for row in reader:
+#             for r in range(len(row)):
+#                 row[r] = float(row[r])
+#             position[i] += [row]
+            
+            
+# # for i in position.keys():
+# #     print(i, position[i])
 
-bxe = position['xe'][::-1]
-print(bxe)
+# bxe = position['xe'][::-1]
+# print(bxe)
+
+
+board = [[0 for i in range(5)] for j in range(4)]
+a=1
+for i in range(4):
+    for j in range(5):
+        board[i][j]= a
+        a = a+1
+
+for i in range(4):
+    print(board[i])
+b = board[::-1]
+for i in range(4):
+    print(b[i])

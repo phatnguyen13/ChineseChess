@@ -15,7 +15,7 @@ def drawValid(screen,gs):
     start = s.GRID
     for i in listValid:
         screen.blit(lightImg, p.Rect(start[1]+ i[1]*start[2],start[0]+i[0]*start[2], s.CELL_SIZE, s.CELL_SIZE))
-def drawGameState(screen,gs,st):
+def drawGameState(screen,gs: chessEngine.State,st):
     screen.blit(boardImg,(0,0))
     drawChessMan(screen,gs.board)
     if gs.selectedCell != ():

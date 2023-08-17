@@ -18,45 +18,81 @@ class Minimax:
     def __init__(self, maxDepth):
         self.maxDepth = maxDepth
         self.nodeExpand = 0
-        
-    def playMinimax(self, board, redmove, after, depth, isMaximizingPlayer, alpha=float('-inf'), beta=float('inf')):
+        self.realMove = None
+        self.path = []
+    def playMinimax(self, board, redMove, after, depth, isMaximizingPlayer, alpha=float('-inf'), beta=float('inf')):
         miniBoard = deepcopy(board)
-        listNextMoves = deepcopy(s.State.getAllValid(miniBoard,redmove,after)) # = [ [(),()],[(),()],[(),()] ]
         #print("listNextMoves: ",listNextMoves)
-        if depth == self.maxDepth or listNextMoves == []:
-            return s.State.evaluate(miniBoard,redmove, after), None
+        listNextMoves = deepcopy(s.State.getAllValid(miniBoard, not isMaximizingPlayer, after)) # = [ [(),()],[(),()],[(),()] ]
+        print(not isMaximizingPlayer,"-listNextMove: ",listNextMoves)
+        if depth == 0 or listNextMoves == []:
+            return s.State.evaluate(miniBoard, not isMaximizingPlayer, after)*(1 if isMaximizingPlayer else -1), None #*(1 if isMaximizingPlayer else -1)      # return value of board which is the score of AI
         self.nodeExpand += 1
-        
-        bestValue = float('-inf') if isMaximizingPlayer else float('inf')
-        for move in listNextMoves:
-            nextboard = deepcopy(s.miniNext(miniBoard,redmove,after,move))
-            
-            evalChild, actionChild = self.playMinimax(nextboard,not redmove,after, depth+1, not isMaximizingPlayer, alpha, beta)
+        random.shuffle(listNextMoves)
+        # bestValue = float('-inf') if isMaximizingPlayer else float('inf')
 
-            print("evalChild: ",evalChild," actionChild: ",actionChild, "node expand: ", self.nodeExpand)
-            if isMaximizingPlayer and bestValue < evalChild:
-                bestValue = evalChild
-                bestAction = deepcopy(move)
-                alpha = max(alpha, bestValue)
-                if beta <= alpha:
+        # bestScore = float('-inf')
+        # for move in listNextMoves:
+        #     nextboard = deepcopy(s.miniNext(miniBoard, redMove, after, move))
+            
+        #     newValue, path = self.playMinimax(nextboard, not redMove , after, depth-1, not isMaximizingPlayer, -beta, -alpha)
+        #     newValue *= -1
+        #     if newValue > bestScore:
+        #         bestScore = newValue
+                
+                
+        #         print ("move: ", move, "value: ", newValue)
+        #         if depth == self.maxDepth:
+        #             self.realMove = deepcopy(move)
+        #             self.path = path + [move]
+
+        #     if bestScore > alpha:
+        #         alpha = bestScore
+        #     if alpha >= beta:
+        #         break
+        # return bestScore, self.path
+        if isMaximizingPlayer:
+            best = float('-inf')
+            for move in listNextMoves:
+                nextboard = deepcopy(s.miniNext(miniBoard, not isMaximizingPlayer, after, move))
+                value, path = self.playMinimax(nextboard, not redMove, after, depth-1, False, alpha, beta)
+                if value > best:
+                    best = value
+                    if depth == self.maxDepth:
+                        self.realMove = deepcopy(move)
+                        self.path = [move]+ path
+                alpha = max(alpha, best)
+                if alpha >= beta:
                     break
-            elif not isMaximizingPlayer and bestValue > evalChild:
-                bestValue = evalChild
-                bestAction = deepcopy(move)
-                beta = min(beta, bestValue)
-                if beta <= alpha:
+            return best, self.path
+        else:
+            best = float('inf')
+            for move in listNextMoves:
+                nextboard = deepcopy(s.miniNext(miniBoard, not isMaximizingPlayer, after, move))
+                value, path = self.playMinimax(nextboard, not redMove , after, depth-1, True, alpha, beta)
+                if value < best:
+                    best = value
+                    if depth == self.maxDepth:
+                        self.realMove = deepcopy(move)
+                        self.path = [move] + path
+                beta = min(beta, best)
+                if alpha >= beta:
                     break
-        return bestValue, bestAction
+            return best, self.path
+        
+        
         
 def playingWithCalCu(state):
     
-    minimax = Minimax(3) 
-    move = deepcopy(minimax.playMinimax(state.board, state.redMove, state.after, 0, True)[1])
+    minimax = Minimax(2) 
+    minimax.playMinimax(state.board, state.redMove, state.after, minimax.maxDepth, True)
+    move = minimax.realMove
+    print("node: ", minimax.nodeExpand,"path: ", minimax.path)
     if move != None:
-
         m = s.Move(state.board,move[0],move[1])
         return m
     return None
+
 
 
 def playWithAI(state, type):

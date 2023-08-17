@@ -187,55 +187,55 @@ class State:
     def checkMate(self):
         position = (self.moveLog[-1].endRow, self.moveLog[-1].endCol) if len(self.moveLog)>0 else None
         if position == None: return False
-        if rule.ChessMan.isThreaten(self.board, self.redKing, self.blackKing, self.redMove, self.after): return True
+        if rule.ChessMan.isThreaten(self.board, self.blackKing, self.redKing, self.redMove, self.after): return True
         return False
     
     # ----------------------------------------------------
     # we don't use this because it's too slow
-    def getAllValidMove(self):
-        listValid = []
-        listValidMove = []
-         # == true if red
-        turn = 'r' if self.redMove else 'b'
+    # def getAllValidMove(self):
+    #     listValid = []
+    #     listValidMove = []
+    #      # == true if red
+    #     turn = 'r' if self.redMove else 'b'
         
-        for row in range(10):
-            for col in range(9):
-                if self.board[row][col] != '---' and turn == self.board[row][col][0]:
-                    chessMan = rule.ChessMan(self.board[row][col]).type
-                    listValid = chessMan.canMove(self.board, (row,col), self.after)
-                    for cell in listValid:
-                        #move = Move(self, (row,col), cell)
-                        move = Move(self.board,(row,col), cell)
-                        tmpBoard = deepcopy(self.board)
-                        tmpredMove = self.redMove
-                        #statetmpmoveLog = deepcopy(self.moveLog)
-                        #statetmpstore = deepcopy(self.store)
+    #     for row in range(10):
+    #         for col in range(9):
+    #             if self.board[row][col] != '---' and turn == self.board[row][col][0]:
+    #                 chessMan = rule.ChessMan(self.board[row][col]).type
+    #                 listValid = chessMan.canMove(self.board, (row,col), self.after)
+    #                 for cell in listValid:
+    #                     #move = Move(self, (row,col), cell)
+    #                     move = Move(self.board,(row,col), cell)
+    #                     tmpBoard = deepcopy(self.board)
+    #                     tmpredMove = self.redMove
+    #                     #statetmpmoveLog = deepcopy(self.moveLog)
+    #                     #statetmpstore = deepcopy(self.store)
                         
                         
-                        tmpblackKing = self.blackKing
-                        tmpredKing = self.redKing
+    #                     tmpblackKing = self.blackKing
+    #                     tmpredKing = self.redKing
                         
-                        tmpBoard[move.startRow][move.startCol] = '---'
-                        tmpBoard[move.endRow][move.endCol] = move.chessManMoved
+    #                     tmpBoard[move.startRow][move.startCol] = '---'
+    #                     tmpBoard[move.endRow][move.endCol] = move.chessManMoved
 
-                        if move.chessManMoved[1:] == 'tu':
-                            if tmpredMove:
-                                tmpredKing = (move.endRow, move.endCol)
-                            else:
-                                tmpblackKing = (move.endRow, move.endCol)
-                        # if move.chessCaptured != '---':
-                        #     for i in statetmp.listSoldier:
-                        #         if i.position == (move.endRow, move.endCol) and i.live == True and i.team != turn:
-                        #             i.live = False
-                        #             break
-                        # for i in statetmp.listSoldier:
-                        #     if i.position == (move.startRow, move.startCol) and i.live == True and i.team == turn:
-                        #         i.changePos((move.endRow, move.endCol))
-                        #         break
+    #                     if move.chessManMoved[1:] == 'tu':
+    #                         if tmpredMove:
+    #                             tmpredKing = (move.endRow, move.endCol)
+    #                         else:
+    #                             tmpblackKing = (move.endRow, move.endCol)
+    #                     # if move.chessCaptured != '---':
+    #                     #     for i in statetmp.listSoldier:
+    #                     #         if i.position == (move.endRow, move.endCol) and i.live == True and i.team != turn:
+    #                     #             i.live = False
+    #                     #             break
+    #                     # for i in statetmp.listSoldier:
+    #                     #     if i.position == (move.startRow, move.startCol) and i.live == True and i.team == turn:
+    #                     #         i.changePos((move.endRow, move.endCol))
+    #                     #         break
 
-                        if rule.ChessMan.validMove(tmpBoard, tmpblackKing, tmpredKing, tmpredMove, self.after):
-                            listValidMove.append((deepcopy(move)))
-        return listValidMove
+    #                     if rule.ChessMan.validMove(tmpBoard, tmpblackKing, tmpredKing, tmpredMove, self.after):
+    #                         listValidMove.append((deepcopy(move)))
+    #     return listValidMove
 
     
     # ----------------------------------------------------
@@ -245,7 +245,7 @@ class State:
     # 'r' if red win, 'b' if black win, '' if no one win
     # ----------------------------------------------------
     def checkEnd(self):
-        if self.getAllValidMove() == []:
+        if State.getAllValid(self.board, self.redMove, self.after) == []:
             return True, 'b' if self.redMove else 'r'
         return False,""
     
@@ -253,29 +253,29 @@ class State:
     # This method is used to evaluate the board
     # we don't use this because it's too slow
     # ----------------------------------------------------
-    def evaluate(self):
-        e = 0
-        if self.checkEnd()[0]:    
-            e += 100000 if (self.checkEnd()[1]=='b' and self.after) or (self.checkEnd()[1]=='r' and not self.after)  else 0
-            e += -100000 if (self.checkEnd()[1]=='b' and not self.after) or (self.checkEnd()[1]=='r' and self.after)  else 0
-        # for sold in self.listSoldier:
-        #     if sold.live:
-        #         chessMan = rule.ChessMan(self.board[sold.position[0]][sold.position[1]]).type
-        #         if sold.team == 'r':
-        #             e += chessMan.power + rule.position[sold.name][sold.position[0]][sold.position[1]]
-        #         else:
-        #             e -= (chessMan.power + rule.bposition[sold.name][sold.position[0]][sold.position[1]])
-        for row in range(10):
-            for col in range(9):
-                if self.board[row][col] != '---':
-                    chessMan = rule.ChessMan(self.board[row][col]).type
-                    if self.board[row][col][0] == 'r':
-                        e += chessMan.power + rule.position[self.board[row][col][1:]][row][col]
-                    else:
-                        e -= (chessMan.power + rule.bposition[self.board[row][col][1:]][row][col])
+    # def evaluate(self):
+    #     e = 0
+    #     if self.checkEnd()[0]:    
+    #         e += 100000 if (self.checkEnd()[1]=='b' and self.after) or (self.checkEnd()[1]=='r' and not self.after)  else 0
+    #         e += -100000 if (self.checkEnd()[1]=='b' and not self.after) or (self.checkEnd()[1]=='r' and self.after)  else 0
+    #     # for sold in self.listSoldier:
+    #     #     if sold.live:
+    #     #         chessMan = rule.ChessMan(self.board[sold.position[0]][sold.position[1]]).type
+    #     #         if sold.team == 'r':
+    #     #             e += chessMan.power + rule.position[sold.name][sold.position[0]][sold.position[1]]
+    #     #         else:
+    #     #             e -= (chessMan.power + rule.bposition[sold.name][sold.position[0]][sold.position[1]])
+    #     for row in range(10):
+    #         for col in range(9):
+    #             if self.board[row][col] != '---':
+    #                 chessMan = rule.ChessMan(self.board[row][col]).type
+    #                 if self.board[row][col][0] == 'r':
+    #                     e += chessMan.power + rule.position[self.board[row][col][1:]][row][col]
+    #                 else:
+    #                     e -= (chessMan.power + rule.bposition[self.board[row][col][1:]][row][col])
         
         
-        return -e if self.after and self.redMove else (-e if not self.after and not self.redMove else e)
+    #     return -e if self.after and self.redMove else (-e if not self.after and not self.redMove else e)
                     
     
     
@@ -292,11 +292,10 @@ class State:
         bk =()
         rk= ()
         
-        
         for i in range(0,3):
             for j in range(3,6):
                 if board[i][j][1:] == 'tu':
-                    bk= (i,j)
+                    bk= (i,j) 
         for i in range(7,10):
             for j in range(3,6):
                 if board[i][j][1:] == 'tu':
@@ -334,33 +333,24 @@ class State:
                             listValidMove.append( [(row,col),cell])
         return listValidMove
     # ----------------------------------------------------
-    # This method is used to evaluate the board
-    # It's faster than the above method
+    # This method is used to evaluate the board which is Max is black and Min is red
+    # It's used in minimax algorithm
     # ----------------------------------------------------
     @staticmethod
     def evaluate(board, redMove, after):
         e = 0
         if State.getAllValid(board, redMove, after) ==[]:    
-            e += 100000 if (redMove and not after) or (not redMove and after)  else 0
-            e += -100000 if (not redMove and not after) or (redMove and after)  else 0
-        # for sold in self.listSoldier:
-        #     if sold.live:
-        #         chessMan = rule.ChessMan(self.board[sold.position[0]][sold.position[1]]).type
-        #         if sold.team == 'r':
-        #             e += chessMan.power + rule.position[sold.name][sold.position[0]][sold.position[1]]
-        #         else:
-        #             e -= (chessMan.power + rule.bposition[sold.name][sold.position[0]][sold.position[1]])
+            return 100000 if after else -100000
+        
         for row in range(10):
             for col in range(9):
                 if board[row][col] != '---':
-                    chessMan = rule.ChessMan(board[row][col]).type
+                    chessMan = board[row][col][1:]
                     if board[row][col][0] == 'r':
-                        e += chessMan.power + rule.position[board[row][col][1:]][row][col]
+                        e -= rule.power[chessMan] * (rule.position[chessMan][row][col] if not after else -rule.bposition[chessMan][row][col])
                     else:
-                        e -= (chessMan.power + rule.bposition[board[row][col][1:]][row][col])
-        
-        
-        return -e if after and redMove else (-e if not after and not redMove else e)
+                        e += (rule.power[chessMan] * (rule.bposition[chessMan][row][col] if not after else -rule.position[chessMan][row][col]))
+        return e
 # ----------------------------------------------------
 # This function use to get the next state (board) after a move
 # ----------------------------------------------------

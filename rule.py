@@ -17,6 +17,8 @@ for i in position.keys():
                 row[r] = float(row[r])
             position[i] += [row]
 bposition = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
+
+power = {'xe':450, 'ma':225, 'vo':75, 'si':80, 'tu':9000, 'ph':230, 'ch':20}
 for i in position.keys():
     bposition[i] = position[i][::-1]
     
@@ -354,19 +356,25 @@ class ChessMan:
         if ChessMan.isThreaten(nextBoard, bk, rk, not turn, after):
             return False
         return True
+    
+    
+    # check it later
     @staticmethod
     def isThreaten(board, bk, rk, turn, after):
         nextBoard = deepcopy(board)
         #listSoldier = deepcopy(board.listSoldier)
         
+        # turn of red, so check if the red king is threatened
         x = bk[0]
         y = bk[1]
-        team = 'b'
+
+        team = 'b' 
         if not turn:
             x = rk[0]
             y = rk[1]
-            team = 'r'
-        
+
+            team = 'r' 
+            
         # check if a horse is threatening the king
         ma =[]
         for row in range(10):
@@ -428,12 +436,12 @@ class ChessMan:
                     phao += [(row,col)]
         if phao != []:
             stayaway = [(x,y),(x+1,y),(x-1,y),(x,y+1),(x,y-1)]
-            candidate = [(x,y) for x in range(10) if (x,y) not in stayaway ] + [(x,y) for y in range(9) if (x,y) not in stayaway ]
+            candidate = [(a,y) for a in range(10) if (a,y) not in stayaway ] + [(x,b) for b in range(9) if (x,b) not in stayaway ]
 
             for i in phao:
                 if i in candidate:
                     phaoLenNong = ChessMan(nextBoard[i[0]][i[1]])
-                    if (x,y) in phaoLenNong.type.canMove(nextBoard,i,False):
+                    if (x,y) in phaoLenNong.type.canMove(nextBoard,i, after):
                         print("The king is threatened by a canon")
                         return True
         # check if a king is threatened by a soldier
