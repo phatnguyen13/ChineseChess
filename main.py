@@ -10,6 +10,8 @@ import drawUI as draw
 
 st = False
 pa = False
+robo = False
+x = -1
 def startGame():
     global st
     st= True
@@ -21,18 +23,21 @@ def playAgainGame():
 def setup():
     global pa
     global st
+    global x
     p.init()
     pa = False
     st = False
-    p.display.set_caption('Chinese Chess')
+
 def shutDown():
     p.quit()
 
 def mainLoop():
 
+    p.display.set_caption('Chinese Chess')
     screen = p.display.set_mode((s.SCREEN_WIDTH,s.SCREEN_HEIGHT))
-    clock = p.time.Clock()
+    
     gs = chessEngine.State()
+    clock = p.time.Clock()
     run = True
     listClick=[]
     cell =()
@@ -53,29 +58,57 @@ def mainLoop():
     print("AI minimax: 2")
     print("Play alone: 0")
     print("input 1,0 or 2: ")
-    x=input()
+    x = -1
+
     while run:
         global st
         global pa
-        draw.drawGameState(screen,gs,st)
-        
+        global robo
+        if x != -1:  
+            draw.drawGameState(screen,gs,st)
+            for o in objects:
+                o.process(screen,gs)
+            draw.drawFoot(screen,gs)
+        if x == -1:
+#            screen.fill(p.Color("black"))
+            x  = draw.drawStart(screen, gs)
+            print(x)
+
         if st:
                 # draw.drawAIThink(screen) 
                 # clock.tick(s.MAX_FPS)
                 # p.display.flip()
-                if x=='0':
+                if x==0:
                     pass
-                elif x == '1':
+                elif x == 1:
                     pWM.playWithAI(gs,1)
-                elif x == '2':
+                elif x == 2:
+                    draw.drawFoot(screen,gs)
+                    draw.drawAIThink(screen) 
+                    clock.tick(s.MAX_FPS)
+                    p.display.flip()
                     pWM.playWithAI(gs,2)
+                elif x == 3:
+                    robo = True
+                    if not gs.redMove and not gs.after:
+                        draw.drawFoot(screen,gs)
+                        draw.drawAIThink(screen) 
+                        clock.tick(s.MAX_FPS)
+                        p.display.flip()
+                    move = pWM.test(gs)
+                    if move != None:
+                        gs.makeMove(move)
+                        draw.drawGameState(screen,gs,st)
+                        clock.tick(s.MAX_FPS)
+                        p.display.flip()
+                    
         for e in p.event.get():
             
             if e.type == p.QUIT:
                 run = False
             
             elif e.type == p.MOUSEBUTTONDOWN:
-                if st == False: continue
+                if st == False or robo: continue
                 
                 start = s.GRID
                 pos = p.mouse.get_pos() 
@@ -108,20 +141,20 @@ def mainLoop():
                                 p.display.flip()
                             listClick =[]
                         gs.selectedCell = ()
-            
+
         if pa:
             pa = False
             main()    
-            
-        for o in objects:
-            o.process(screen,gs)
-        draw.drawFoot(screen,gs)
 
         clock.tick(s.MAX_FPS)
         p.display.flip()
+        
+        
 
 def main():
+    
     setup()
+    
     mainLoop()
     shutDown()
         

@@ -3,13 +3,13 @@ from copy import deepcopy
 import chessEngine as s
 
 def playingRandom(state):        
-    listMove = deepcopy(state.getAllValidMove())
+    listMove = deepcopy(s.State.getAllValid(state.board, state.redMove, state.after))
     for i in listMove:
         print("list move: ",i)
     if listMove != []:
         move = random.choice(listMove)
-        print("turn of red: ",state.redMove,"----AI move: ",move.chessManMoved," ",move.getChange())
-        return move
+        
+        return s.Move(state.board, move[0], move[1])
     return None
 
 
@@ -23,10 +23,10 @@ class Minimax:
     def playMinimax(self, board, redMove, after, depth, isMaximizingPlayer, alpha=float('-inf'), beta=float('inf')):
         miniBoard = deepcopy(board)
         #print("listNextMoves: ",listNextMoves)
-        listNextMoves = deepcopy(s.State.getAllValid(miniBoard, not isMaximizingPlayer, after)) # = [ [(),()],[(),()],[(),()] ]
-        print(not isMaximizingPlayer,"-listNextMove: ",listNextMoves)
+        listNextMoves = deepcopy(s.State.getAllValid(miniBoard, redMove , after)) # = [ [(),()],[(),()],[(),()] ]
+        #print(not isMaximizingPlayer,"-listNextMove: ",listNextMoves)
         if depth == 0 or listNextMoves == []:
-            return s.State.evaluate(miniBoard, not isMaximizingPlayer, after)*(1 if isMaximizingPlayer else -1), None #*(1 if isMaximizingPlayer else -1)      # return value of board which is the score of AI
+            return s.State.evaluate(miniBoard, redMove, after)*(1 if isMaximizingPlayer else -1), None #*(1 if isMaximizingPlayer else -1)      # return value of board which is the score of AI
         self.nodeExpand += 1
         random.shuffle(listNextMoves)
         # bestValue = float('-inf') if isMaximizingPlayer else float('inf')
@@ -60,7 +60,7 @@ class Minimax:
                     best = value
                     if depth == self.maxDepth:
                         self.realMove = deepcopy(move)
-                        self.path = [move]+ path
+                        
                 alpha = max(alpha, best)
                 if alpha >= beta:
                     break
@@ -68,13 +68,13 @@ class Minimax:
         else:
             best = float('inf')
             for move in listNextMoves:
-                nextboard = deepcopy(s.miniNext(miniBoard, not isMaximizingPlayer, after, move))
+                nextboard = deepcopy(s.miniNext(miniBoard, redMove, after, move))
                 value, path = self.playMinimax(nextboard, not redMove , after, depth-1, True, alpha, beta)
                 if value < best:
                     best = value
                     if depth == self.maxDepth:
                         self.realMove = deepcopy(move)
-                        self.path = [move] + path
+                        
                 beta = min(beta, best)
                 if alpha >= beta:
                     break
@@ -121,3 +121,30 @@ def playWithAI(state, type):
                 state.makeMove(play)
             else:
                 print("no move")
+                
+def test(state):
+    turn = True if state.after else False
+    play = None
+    if turn:
+        if state.redMove:
+            play = None
+            play = playingWithCalCu(state)
+            if play:
+                state.makeMove(play)
+            else:
+                print("no move")
+        else:
+            play = None
+            play = playingRandom(state)
+            if play:
+                state.makeMove(play)
+            else:
+                print("no move")
+    else:
+        if state.redMove:
+            play = None
+            play = playingRandom(state)
+        else:
+            play = None
+            play = playingWithCalCu(state)
+        return play

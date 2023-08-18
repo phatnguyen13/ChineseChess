@@ -4,6 +4,7 @@ import loadimg as l
 import chessEngine
 import button as b
 import playWithMachine as pWM
+import time
 from main import st
 chessManImg = l.loadChessMan()
 boardImg = l.loadBoard()
@@ -71,3 +72,46 @@ def drawAIThink(screen):
     myFont = p.font.SysFont('Comic Sans MS', 30)
     textSurface = myFont.render("ChaCa is thinking...", False, (0, 0, 0))
     screen.blit(textSurface,(s.WIDTH/2 - textSurface.get_width()/2, s.SCREEN_HEIGHT/2 - textSurface.get_height()/2))
+
+
+def drawTitle(screen, x, y, width, height, text):
+    p.font.init()
+    tFont = p.font.SysFont('Comic Sans MS', 30)
+    
+    Title = tFont.render(text, True, (55, 255, 255))
+    Rect = Title.get_rect()
+    Rect.center = ((x + width/2), (y + height/2))
+    screen.blit(Title, Rect)
+    return Title
+def drawButton(screen, x, y, width, height, text):
+    Button = p.Rect(x, y, width, height)
+    p.font.init()
+    bFont = p.font.SysFont('Comic Sans MS', 30)
+    content = bFont.render(text, True, (55,55,55))
+    Rect = content.get_rect()
+    Rect.center = Button.center
+    p.draw.rect(screen, (255, 255, 255), Button)
+    screen.blit(content, Rect)
+    return Button
+    
+def drawStart(screen, gs):
+    drawTitle(screen, s.WIDTH/2, 100, 0, 0, "Chinese Chess")
+    randomBut = drawButton(screen, s.BUTTEXT_X , s.BUTTEXT_Y, s.BUT_TEXT, s.BUT_TEXT/6, "Play with Random")
+    chaca = drawButton(screen, s.BUTTEXT_X,  s.BUTTEXT_Y + s.BUT_TEXT/3, s.BUT_TEXT, s.BUT_TEXT/6, "Play with ChaCa")
+    test = drawButton(screen, s.BUTTEXT_X , s.BUTTEXT_Y + 2*s.BUT_TEXT/3, s.BUT_TEXT, s.BUT_TEXT/6, "Watch them play")
+    
+    click = p.mouse.get_pressed()[0]
+    if click==1:
+        
+        mouse = p.mouse.get_pos()
+        if randomBut.collidepoint(mouse):
+            time.sleep(0.2)
+            
+            return 1
+        elif chaca.collidepoint(mouse):
+            time.sleep(0.2)
+            return 2
+        elif test.collidepoint(mouse):
+            time.sleep(0.2)
+            return 3
+    return -1

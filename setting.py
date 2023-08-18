@@ -7,7 +7,7 @@
 # CELL_SIZE = 38 # = 64
 # GRID = (64,84,46)
 #BUT_WIDTH = BUT_HEIGHT = 50
-
+import pygame as p
 WIDTH = 720
 HEIGHT = 720
 
@@ -35,3 +35,10 @@ START_Y = HEIGHT/2 - BUT_HEIGHT/2
 REPLAY_X = SCREEN_WIDTH - BUT_WIDTH- BUT_WIDTH +15
 REPLAY_Y = HEIGHT/2 - BUT_HEIGHT/2 + BUT_WIDTH
 # s.WIDTH/2 - textSurface.get_width()/2, s.SCREEN_HEIGHT/2 - textSurface.get_height()/2))
+
+# BUT_FONT = p.font.Font("OpenSans-Regular.ttf", 28)
+# TITLE_FONT = p.font.Font("OpenSans-Regular.ttf", 40)
+
+BUT_TEXT = 300
+BUTTEXT_X = WIDTH/2 - BUT_TEXT/2
+BUTTEXT_Y = HEIGHT/2 - BUT_TEXT/2
