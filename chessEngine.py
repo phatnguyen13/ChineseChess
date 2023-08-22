@@ -98,7 +98,7 @@ class State:
                 tmpBlackKing = (move.endRow, move.endCol)
 
         # check if the movement is valid
-        if not rule.ChessMan.validMove(tmpBoard, tmpBlackKing, tmpRedKing,tmpRedMove, self.after):      
+        if not rule.validMove(tmpBoard, tmpBlackKing, tmpRedKing,tmpRedMove, self.after):      
             print("Loi mat tuong")
             return False
         else:
@@ -177,18 +177,21 @@ class State:
     #   It returns a list of valid moves
     #----------------------------------------------------
     def checkValid(self, position):
-        x = rule.ChessMan(self.board[position[0]][position[1]])
-        return x.type.canMove(self.board, position, self.after)
+        x = rule.RuleMove(self.board, position, self.after)
+        return x
     
     #----------------------------------------------------
     #   This method check if the king is check
     #   It returns true if the king is check
     #----------------------------------------------------
     def checkMate(self):
-        position = (self.moveLog[-1].endRow, self.moveLog[-1].endCol) if len(self.moveLog)>0 else None
-        if position == None: return False
-        if rule.ChessMan.isThreaten(self.board, self.blackKing, self.redKing, self.redMove, self.after): return True
-        return False
+        # position = (self.moveLog[-1].endRow, self.moveLog[-1].endCol) if len(self.moveLog)>0 else None
+        # if position == None: return False
+        x = rule.isThreaten(self.board, self.blackKing, self.redKing, not self.redMove, self.after)
+        
+        return x
+        
+        
     
     # ----------------------------------------------------
     # we don't use this because it's too slow
@@ -304,9 +307,9 @@ class State:
             bk, rk = rk, bk
         for row in range(10):
             for col in range(9):
-                if board[row][col] != '---' and turn == board[row][col][0]:
-                    chessMan = rule.ChessMan(board[row][col]).type
-                    listCandidate = chessMan.canMove(board, (row,col), after)
+                if board[row][col] != '---' and turn == board[row][col][0]:   
+                  
+                    listCandidate = rule.RuleMove(board, (row,col), after)
                     for cell in listCandidate:
                         
                         move = Move(board, (row,col), cell)
@@ -328,7 +331,7 @@ class State:
                                 tmpredKing = (move.endRow, move.endCol)
                             else:
                                 tmpblackKing = (move.endRow, move.endCol)
-                        if rule.ChessMan.validMove(tmpBoard, tmpblackKing, tmpredKing, tmpredMove, after):
+                        if rule.validMove(tmpBoard, tmpblackKing, tmpredKing, tmpredMove, after):
                             #listValidMove.append((deepcopy(move)))
                             listValidMove.append( [(row,col),cell])
         return listValidMove
@@ -354,7 +357,7 @@ class State:
 # ----------------------------------------------------
 # This function use to get the next state (board) after a move
 # ----------------------------------------------------
-def miniNext(board, redMove, after, m):
+def miniNext(board, redMove, after, m): 
         tmpBoard = deepcopy(board)
         move = deepcopy(m)
         # move = [(a,b), (e,d)]

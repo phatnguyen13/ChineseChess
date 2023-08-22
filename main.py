@@ -7,7 +7,6 @@ import playWithMachine as pWM
 import drawUI as draw
 
 
-
 st = False
 pa = False
 robo = False
@@ -15,11 +14,11 @@ x = -1
 def startGame():
     global st
     st= True
-    print("start game")
+    
 def playAgainGame():
     global pa
     pa = True
-    print("play again game")
+    
 def setup():
     global pa
     global st
@@ -54,56 +53,50 @@ def mainLoop():
     # objects.append(reverseBut)
     # objects.append(startBut)
     objects += (backwardBut,nextstepBut,reverseBut,startBut,playAgainBut)
-    print("AI random: 1")
-    print("AI minimax: 2")
-    print("Play alone: 0")
-    print("input 1,0 or 2: ")
-    x = -1
 
+    x = -1
     while run:
         global st
         global pa
         global robo
-        if x != -1:  
-            draw.drawGameState(screen,gs,st)
-            for o in objects:
-                o.process(screen,gs)
-            draw.drawFoot(screen,gs)
-        if x == -1:
-#            screen.fill(p.Color("black"))
-            x  = draw.drawStart(screen, gs)
-            print(x)
 
-        if st:
-                # draw.drawAIThink(screen) 
-                # clock.tick(s.MAX_FPS)
-                # p.display.flip()
-                if x==0:
-                    pass
-                elif x == 1:
-                    pWM.playWithAI(gs,1)
-                elif x == 2:
-                    draw.drawFoot(screen,gs)
-                    draw.drawAIThink(screen) 
-                    clock.tick(s.MAX_FPS)
-                    p.display.flip()
-                    pWM.playWithAI(gs,2)
-                elif x == 3:
-                    robo = True
-                    if not gs.redMove and not gs.after:
-                        draw.drawFoot(screen,gs)
-                        draw.drawAIThink(screen) 
-                        clock.tick(s.MAX_FPS)
-                        p.display.flip()
-                    move = pWM.test(gs)
-                    if move != None:
-                        gs.makeMove(move)
-                        draw.drawGameState(screen,gs,st)
-                        clock.tick(s.MAX_FPS)
-                        p.display.flip()
-                    
+
         for e in p.event.get():
             
+            
+            if x != -1:  
+                draw.drawGameState(screen,gs,st)
+                for o in objects:
+                    o.process(screen,gs)
+                #draw.drawFoot(screen,gs)
+            if x == -1:
+                x  = draw.drawStart(screen, gs)
+            if st:
+                    # draw.drawAIThink(screen) 
+                    draw.drawGameState(screen,gs,st)
+                    #draw.drawAIThink(screen) if not gs.redMove and not gs.after and x !=3 else None
+                    if x==0:
+                        pass
+                    elif x == 1:
+                        
+                        pWM.playWithAI(gs,1)
+                    elif x == 2:
+                        
+                        pWM.playWithAI(gs,2)
+                    elif x == 3:
+                        robo = True
+                        if not gs.redMove and not gs.after:
+                            draw.drawFoot(screen,gs)
+                            
+                        
+                        move = pWM.test(gs)
+                        if move != None:
+                            gs.makeMove(move)
+    
+                    elif x ==4:
+                        pass
+                    
+                    
             if e.type == p.QUIT:
                 run = False
             
@@ -136,12 +129,15 @@ def mainLoop():
                                 move = chessEngine.Move(gs.board,listClick[0], listClick[1])
                                 gs.makeMove(move)
                                 AITurn = True
+
                                 draw.drawGameState(screen,gs,st)
                                 clock.tick(s.MAX_FPS)
                                 p.display.flip()
                             listClick =[]
                         gs.selectedCell = ()
-
+        # if gs.checkMate():
+        #     print("checkmake")
+        #     draw.drawChessMate(screen,gs)
         if pa:
             pa = False
             main()    
@@ -149,8 +145,6 @@ def mainLoop():
         clock.tick(s.MAX_FPS)
         p.display.flip()
         
-        
-
 def main():
     
     setup()

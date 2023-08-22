@@ -43,3 +43,7 @@ def loadButton(type):
 def loadSquare ():
     square = p.transform.scale(p.image.load('img/squareOrigin.png'),(s.CELL_SIZE, s.CELL_SIZE))
     return square
+
+def loadCheckMate():
+    checkMate = p.transform.scale(p.image.load('img/check.png'),(s.CELL_SIZE*3, s.CELL_SIZE*3))
+    return checkMate

@@ -2,16 +2,14 @@ import random
 from copy import deepcopy
 import chessEngine as s
 
-def playingRandom(state):        
+def playingRandom(state):
     listMove = deepcopy(s.State.getAllValid(state.board, state.redMove, state.after))
     for i in listMove:
         print("list move: ",i)
     if listMove != []:
         move = random.choice(listMove)
-        
         return s.Move(state.board, move[0], move[1])
     return None
-
 
 
 class Minimax:
@@ -79,8 +77,7 @@ class Minimax:
                 if alpha >= beta:
                     break
             return best, self.path
-        
-        
+            
         
 def playingWithCalCu(state):
     
@@ -92,8 +89,6 @@ def playingWithCalCu(state):
         m = s.Move(state.board,move[0],move[1])
         return m
     return None
-
-
 
 def playWithAI(state, type):
     turn = True if state.after else False
@@ -121,7 +116,7 @@ def playWithAI(state, type):
                 state.makeMove(play)
             else:
                 print("no move")
-                
+              
 def test(state):
     turn = True if state.after else False
     play = None
@@ -146,5 +141,12 @@ def test(state):
             play = playingRandom(state)
         else:
             play = None
-            play = playingWithCalCu(state)
+            
+            if flaginkhc:
+                play = khaicuc[play]
+                
+            else: # play == None
+                
+                play = playingWithCalCu(state)
         return play
+    
