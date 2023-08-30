@@ -2,6 +2,8 @@ import pygame as p
 import setting as s
 import loadimg as l
 
+
+# this class define the normal button
 class Button:
     isStartGame = False
     def __init__(self, x, y, width, height,type,img, onClickFunction =None):
@@ -72,6 +74,8 @@ class Button:
             
             screen.blit(self.img[self.state], (self.x, self.y))
 
+
+#this class define a special button like the start game button
 class SButton(Button):
     def __init__(self, x, y, width, height,type,img, onClickFunction =None):
         super().__init__( x, y, width, height,type,img, onClickFunction)

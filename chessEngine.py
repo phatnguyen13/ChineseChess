@@ -25,36 +25,35 @@ class Move:
 class State:
     def __init__(self):
         self.board= [
-        #     ['---','---','---','---','btu','bsi','bvo','bma','bxe'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['---','---','---','---','---','---','---','bph','---'],
-        #     ['---','---','---','---','---','---','bch','---','---'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['rch','---','rch','---','rch','---','---','---','rch'],
-        #     ['---','rph','---','---','---','---','---','rph','---'],
-        #     ['---','---','---','---','---','---','---','---','---'],
-        #     ['rxe','rma','rvo','rtu','---','rsi','rvo','---','---']
-        # ]
-        
-        #[
-            ['bxe','bma','bvo','bsi','btu','bsi','bvo','bma','bxe'],
+            ['bxe','bma','bvo','bsi','btu','bsi','bvo','bma','bxe'],       # b = black
+            ['---','---','---','---','---','---','---','---','---'],        # r = red
+            ['---','bph','---','---','---','---','---','bph','---'],        # ma = horse
+            ['bch','---','bch','---','bch','---','bch','---','bch'],        
+            ['---','---','---','---','---','---','---','---','---'],        # ph = cannon
+            ['---','---','---','---','---','---','---','---','---'],        # vo = elephant
+            ['rch','---','rch','---','rch','---','rch','---','rch'],        # si = advisor
+            ['---','rph','---','---','---','---','---','rph','---'],        # ch = soldier
             ['---','---','---','---','---','---','---','---','---'],
-            ['---','bph','---','---','---','---','---','bph','---'],
-            ['bch','---','bch','---','bch','---','bch','---','bch'],
-            ['---','---','---','---','---','---','---','---','---'],
-            ['---','---','---','---','---','---','---','---','---'],
-            ['rch','---','rch','---','rch','---','rch','---','rch'],
-            ['---','rph','---','---','---','---','---','rph','---'],
-            ['---','---','---','---','---','---','---','---','---'],
-            ['rxe','rma','rvo','rsi','rtu','rsi','rvo','rma','rxe']
+            ['rxe','rma','rvo','rsi','rtu','rsi','rvo','rma','rxe']         # tu = king
         ]
-
-                
-        self.redMove = True         # red move is your
-        self.after = False          # after mean when revese the board, the red move belong to machine
-        self.moveLog = []           # store all the move
-        self.store =[]              # store all the move when click remove button
+            # ['bxe','---','bvo','bsi','btu','bsi','bvo','---','bxe'],       # b = black
+            # ['---','---','---','---','---','---','---','---','---'],        # r = red
+            # ['bma','bph','---','---','bph','---','bma','---','---'],        # ma = horse
+            # ['bch','---','bch','---','bch','---','---','---','bch'],        
+            # ['---','---','---','---','---','---','bch','---','---'],        # ph = cannon
+            # ['---','---','rch','---','---','---','---','---','---'],        # vo = elephant
+            # ['rch','---','---','---','rch','---','rch','---','rch'],        # si = advisor
+            # ['---','rph','rma','---','---','---','rma','rph','---'],        # ch = soldier
+            # ['---','---','---','---','---','---','---','---','---'],
+            # ['rxe','---','rvo','rsi','rtu','rsi','rvo','---','rxe']         # tu = king
+        # ]
+ 
+ 
+ 
+        self.redMove = True         #  red move is your
+        self.after = False          #  after mean when revese the board, the red move belong to machine
+        self.moveLog = []           #  store all the move
+        self.store =[]              #  store all the move when click remove button
         self.selectedCell = ()      #  store the selected cell
         self.blackKing = (0,4)      #  store the position of black king
         self.redKing = (9,4)        #  store the position of red king
@@ -98,7 +97,7 @@ class State:
                 tmpBlackKing = (move.endRow, move.endCol)
 
         # check if the movement is valid
-        if not rule.validMove(tmpBoard, tmpBlackKing, tmpRedKing,tmpRedMove, self.after):      
+        if not rule.validMove(tmpBoard, tmpRedMove, self.after):      
             print("Loi mat tuong")
             return False
         else:
@@ -292,23 +291,10 @@ class State:
         listValidMove = []
          # == true if red
         turn = 'r' if redMove else 'b'
-        bk =()
-        rk= ()
-        
-        for i in range(0,3):
-            for j in range(3,6):
-                if board[i][j][1:] == 'tu':
-                    bk= (i,j) 
-        for i in range(7,10):
-            for j in range(3,6):
-                if board[i][j][1:] == 'tu':
-                    rk= (i,j)
-        if after:
-            bk, rk = rk, bk
+
         for row in range(10):
             for col in range(9):
                 if board[row][col] != '---' and turn == board[row][col][0]:   
-                  
                     listCandidate = rule.RuleMove(board, (row,col), after)
                     for cell in listCandidate:
                         
@@ -316,22 +302,11 @@ class State:
                         
                         tmpBoard = deepcopy(board)
                         tmpredMove = redMove
-                        #statetmpmoveLog = deepcopy(self.moveLog)
-                        #statetmpstore = deepcopy(self.store)
-
-                        
-                        tmpblackKing = bk
-                        tmpredKing = rk
                         
                         tmpBoard[move.startRow][move.startCol] = '---'
                         tmpBoard[move.endRow][move.endCol] = move.chessManMoved
 
-                        if move.chessManMoved[1:] == 'tu':
-                            if tmpredMove:
-                                tmpredKing = (move.endRow, move.endCol)
-                            else:
-                                tmpblackKing = (move.endRow, move.endCol)
-                        if rule.validMove(tmpBoard, tmpblackKing, tmpredKing, tmpredMove, after):
+                        if rule.validMove(tmpBoard, tmpredMove, after):
                             #listValidMove.append((deepcopy(move)))
                             listValidMove.append( [(row,col),cell])
         return listValidMove
@@ -340,19 +315,27 @@ class State:
     # It's used in minimax algorithm
     # ----------------------------------------------------
     @staticmethod
-    def evaluate(board, redMove, after):
+    def evaluate(board, redMove, after, c):
         e = 0
         if State.getAllValid(board, redMove, after) ==[]:    
             return 100000 if after else -100000
-        
+        if c >=0:
+            power = deepcopy(rule.startPower)
+            
+        elif c >= 14:
+            power = deepcopy(rule.midPower)
+            
+        else:
+            power = deepcopy(rule.endPower)
+
         for row in range(10):
             for col in range(9):
                 if board[row][col] != '---':
                     chessMan = board[row][col][1:]
                     if board[row][col][0] == 'r':
-                        e -= rule.power[chessMan] * (rule.position[chessMan][row][col] if not after else -rule.bposition[chessMan][row][col])
+                        e = (e - power[chessMan] - rule.belowPosition[chessMan][row][col]) if not after else (e+power[chessMan] +rule.upperPosition[chessMan][row][col])
                     else:
-                        e += (rule.power[chessMan] * (rule.bposition[chessMan][row][col] if not after else -rule.position[chessMan][row][col]))
+                        e = e + power[chessMan] + rule.upperPosition[chessMan][row][col] if not after else (e- power[chessMan]-rule.belowPosition[chessMan][row][col])
         return e
 # ----------------------------------------------------
 # This function use to get the next state (board) after a move
@@ -367,18 +350,3 @@ def miniNext(board, redMove, after, m):
         tmpBoard[move[1][0]][move[1][1]] = chessManMoved
 
         return tmpBoard
-       
-
-       
-       
-  
-
-def main():
-    state = State()
-    print(state.evaluate())
-    state.reverse()
-    print(state.evaluate())
-    
-
-if __name__ == "__main__":
-    main()

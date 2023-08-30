@@ -1,25 +1,30 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
 import csv
-import chessEngine
 
 
-position = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
-for i in position.keys():
+# count score at the bottom chess
+belowPosition = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
+for i in belowPosition.keys():
     name = i+'.csv'
     with open ('C:/Users/OnDoing/ChineseChess/unity/'+name, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
             for r in range(len(row)):
                 row[r] = float(row[r])
-            position[i] += [row]
-bposition = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
+            belowPosition[i] += [row]
 
-power = {'xe':450, 'ma':225, 'vo':75, 'si':80, 'tu':9000, 'ph':230, 'ch':20}
-for i in position.keys():
-    bposition[i] = position[i][::-1]
+startPower = {'xe':90, 'ma':40, 'vo':25, 'si':30, 'tu':9000, 'ph':45, 'ch':10}  # power of chess Man at the start of the game
+midlePower = {'xe':90, 'ma':40, 'vo':25, 'si':30, 'tu':9000, 'ph':50, 'ch':20}  # power of chess Man at the middle of the game
+endPower = {'xe':100, 'ma':50, 'vo':40, 'si':40, 'tu':9000, 'ph':40, 'ch':25}   #  power of chess Man at the end of the game
 
-    
+# count score at the upper chess
+upperPosition = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
+for i in belowPosition.keys():
+    upperPosition[i] = belowPosition[i][::-1]
+
+
+# this is the class that return list of valid move of CAR (XE)
 def canMoveCar(board,position,upSideDown):
     cells =[]
     team = board[position[0]][position[1]][0]
@@ -57,6 +62,7 @@ def canMoveCar(board,position,upSideDown):
         else: break
     return cells
 
+# this is the class that return list of valid move of HORSE (MA)
 def canMoveHorse(board,position,upSideDown):
     cells =[]
     team = board[position[0]][position[1]][0]
@@ -90,6 +96,7 @@ def canMoveHorse(board,position,upSideDown):
                 cells += [(nowRow-2,nowCol-1)]
     return cells
 
+# this is the class that return list of valid move of ELEPHANT (VO)
 def canMoveElephant(board,position,upSideDown):
     cells =[]
     team = board[position[0]][position[1]][0]
@@ -120,6 +127,7 @@ def canMoveElephant(board,position,upSideDown):
                         cells += [x]
     return cells
 
+# this is the class that return list of valid move of ADVISOR (SI)
 def canMoveAdvisor(board,position,upSideDown):
     cells=[]
     i = position[0]
@@ -151,6 +159,8 @@ def canMoveAdvisor(board,position,upSideDown):
                         cells += [x]
     return cells
 
+
+# this is the class that return list of valid move of KING (TUONG)
 def canMoveKing(board,position,upSideDown):
     cells=[]
     i = position[0]
@@ -181,6 +191,8 @@ def canMoveKing(board,position,upSideDown):
                         cells += [x]
     return cells    
 
+
+# this is the class that return list of valid move of CANON (PHAO)
 def canMoveCanon(board,position,upSidedown):
     cells=[]
     i = position[0]
@@ -232,6 +244,8 @@ def canMoveCanon(board,position,upSidedown):
             break
     return cells
 
+
+# this is the class that return list of valid move of SOLDIER (TOT)
 def canMoveSoldier(board,position,upSideDown):
     cells=[]
     i = position[0]
@@ -297,10 +311,22 @@ def RuleMove(board, position, upsidedown):  #(), upsidedown is after
  
 
 
-
-def validMove(board, bk, rk, turn, after):
-   
+# this is the class that return list of valid move with some rules of this game 
+def validMove(board, turn, after):
     flag = False
+    bk =()
+    rk= ()
+    
+    for i in range(0,3):
+        for j in range(3,6):
+            if board[i][j][1:] == 'tu':
+                bk= (i,j) 
+    for i in range(7,10):
+        for j in range(3,6):
+            if board[i][j][1:] == 'tu':
+                rk = (i,j)
+    if after:
+        bk, rk = rk, bk
     if bk[1] == rk[1]:
         for i in range(bk[0]+1,rk[0]+1):
             if board[i][bk[1]] == '---':
@@ -319,6 +345,8 @@ def validMove(board, bk, rk, turn, after):
     
     # check it later
 
+
+# this is the function check if the king is threatened
 def isThreaten(board, bk, rk, turn, after):
     # turn of red, so check if the red king is threatened
     x = bk[0]
@@ -341,7 +369,7 @@ def isThreaten(board, bk, rk, turn, after):
             if i in candidate:
                 maChien = canMoveHorse(board, (i[0],i[1]), after)
                 if (x,y) in maChien:
-                    print("The king is threatened by a horse")
+                    #print("The king is threatened by a horse")
                     return True
     # check if a car is threatening the king
     xe = []
@@ -355,14 +383,14 @@ def isThreaten(board, bk, rk, turn, after):
                 if i[1] < y:
                     for j in range(i[1],y):
                         if j == y-1:
-                            print("The king is threatened by a car")
+                            #print("The king is threatened by a car")
                             return True
                         if board[x][j+1] != '---':
                             break
                 if i[1] > y:
                     for j in range(y,i[1]):
                         if j == i[1]-1:
-                            print("The king is threatened by a car")
+                            #print("The king is threatened by a car")
                             return True
                         if board[x][j+1] != '---':
                             break
@@ -370,14 +398,14 @@ def isThreaten(board, bk, rk, turn, after):
                 if i[0] < x:
                     for j in range(i[0],x):
                         if j == x-1:
-                            print("The king is threatened by a car")
+                            #print("The king is threatened by a car")
                             return True
                         if board[j+1][y] != '---':
                             break
                 if i[0] > x:
                     for j in range(x,i[0]):
                         if j == i[0]-1:
-                            print("The king is threatened by a car")
+                            #print("The king is threatened by a car")
                             return True
                         if board[j+1][y] != '---':
                             break
@@ -396,10 +424,8 @@ def isThreaten(board, bk, rk, turn, after):
             if i in candidate:
                 phaoLenNong = canMoveCanon(board, i, after)
                 if (x,y) in phaoLenNong:
-                    print("The king is threatened by a canon")
+                    #print("The king is threatened by a canon")
                     return True
-
-    print('aaa')
     # check if a king is threatened by a soldier
     tot = []
     for row in range(10):
@@ -411,8 +437,8 @@ def isThreaten(board, bk, rk, turn, after):
         for i in tot:
             if i in candidate:
                 totChien = canMoveSoldier(board, i, after)
-                if (x,y) in totChien.type.canMove(board,i,after):
-                    print("The king is threatened by a soldier")
+                if (x,y) in totChien:
+                    ##print("The king is threatened by a soldier")
                     return True
     return False
     
