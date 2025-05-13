@@ -3,6 +3,7 @@
 
 This project implements a classic Chinese Chess (Xiangqi) game using Python and Pygame, allowing players to challenge a computer opponent powered by the Minimax algorithm.
 
+You can download this program at this [link 🗃️](https://drive.google.com/uc?export=download&id=1ba59Tp4azEE01zptu1_7GcN2itHOjqBc)
 ## Features
 
 - **Visual Game Interface:**  Play the game with a visually appealing and intuitive interface using Pygame.
