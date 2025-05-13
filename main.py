@@ -13,6 +13,8 @@ pa = False      # PLAY AGAIN OR NOT
 robo = False    # ROBOT OR NOT USE TO AI PLAY WITH RAMDOM
 x = -1          # CHOOSE MODE
 
+
+
 '''
     FUNCTION: startGame
     use to start create the board

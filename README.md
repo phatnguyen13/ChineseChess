@@ -34,6 +34,11 @@ This project implements a classic Chinese Chess (Xiangqi) game using Python and 
     ```bash
     python main.py
     ```
+4. **Build (optional):**
+    ```bash
+   pip install pyinstaller 
+   python -m PyInstaller --noconsole --add-data "img;img" --add-data "unity;unity" --add-data "OpenSans-Regular.ttf;." --add-data "chessEngine.py;." --add-data "drawUI.py;." --add-data "button.py;." --add-data "loadimg.py;." --add-data "playWithMachine.py;." --add-data "rule.py;." --add-data "setting.py;." --add-data "bookmove.py;." --add-data "ml\H5_FILE;ml\H5_FILE"  --hidden-import keras main.py
+   ```
 
 ## Game Mechanics
 

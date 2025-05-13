@@ -2,12 +2,19 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import csv
 
+import sys 
+import os
 
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 # count score at the bottom chess
 belowPosition = {'xe':[], 'ma':[], 'vo':[], 'si':[], 'tu':[], 'ph':[], 'ch':[]}
 for i in belowPosition.keys():
     name = i+'.csv'
-    with open ('C:/Users/OnDoing/ChineseChess/unity/'+name, 'r') as f:
+    with open(resource_path(os.path.join('unity', name)), 'r') as f:
         reader = csv.reader(f)
         for row in reader:
             for r in range(len(row)):

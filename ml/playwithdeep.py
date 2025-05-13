@@ -1,14 +1,17 @@
 import random
 from copy import deepcopy
 import chessEngine as s
-import tensorflow as tf
+#import tensorflow as tf
 from keras.models import load_model
 from ml import convert as c
 import numpy as np
+import os
 
+from rule import resource_path
 
-
-model = load_model('C:\\Users\\OnDoing\\ChineseChess\\ml\\chinese_chess_model_10000.h5')
+name = 'chinese_chess_model_10000.h5'
+#model = load_model('./ml/H5_FILE/chinese_chess_model_10000.h5')
+model = load_model(resource_path(os.path.join('ml','H5_FILE', name)))
 #model = load_model('C:\\Users\\OnDoing\\ChineseChess\\ml\\chinese_chess_model_10000.h5')
 def evaluation(board, redMove, after):
     newBoard = deepcopy(board)
